@@ -17,10 +17,20 @@ import {
 } from '../data/site'
 import { useApp } from '../store/app'
 import { CourseCard } from '../components/CourseCard'
+import { CourseFinder } from '../components/CourseFinder'
 import { AccordionItem } from '../components/ui/Accordion'
 import { Button } from '../components/ui/Button'
 import { Icon, type IconName } from '../components/ui/Icon'
 import { Avatar, SectionHead, Stat, Stars } from '../components/ui/Primitives'
+
+/* One project per course, taken from the real curriculum rather than
+   written for the marketing page. Computed once at module load. */
+const PROJECTS = COURSES.flatMap((c) => {
+  const project = c.curriculum
+    .flatMap((m) => m.lessons)
+    .find((l) => l.kind === 'project' && !l.title.startsWith('Build:'))
+  return project ? [{ slug: c.slug, course: c.short, title: project.title.replace(/^Project:\s*/, '') }] : []
+}).slice(0, 8)
 
 export default function Home() {
   const { enrolled, progressFor } = useApp()
@@ -139,6 +149,13 @@ export default function Home() {
         </section>
       )}
 
+      {/* ---- Course finder ---------------------------- */}
+      <section className="section section--tight">
+        <div className="wrap">
+          <CourseFinder />
+        </div>
+      </section>
+
       {/* ---- Courses ---------------------------------- */}
       <section className="section">
         <div className="wrap">
@@ -180,6 +197,38 @@ export default function Home() {
                 <h3>{p.title}</h3>
                 <p>{p.body}</p>
               </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Projects ---------------------------------
+          Real project lessons pulled from the curricula, not invented
+          marketing examples. */}
+      <section className="section">
+        <div className="wrap">
+          <SectionHead
+            eyebrow="Learn by doing"
+            title="Things you will actually build"
+            sub="Every track ends with work that goes into your portfolio. These are real projects from the syllabus, not illustrations."
+            center
+          />
+
+          <div className="projects">
+            {PROJECTS.map((p, i) => (
+              <Link
+                to={`/courses/${p.slug}`}
+                className="project rise"
+                key={`${p.slug}-${p.title}`}
+                style={{ '--i': Math.min(i, 6) } as React.CSSProperties}
+              >
+                <span className="project__n">{String(i + 1).padStart(2, '0')}</span>
+                <span className="project__body">
+                  <strong>{p.title}</strong>
+                  <span>{p.course}</span>
+                </span>
+                <Icon name="arrow-up-right" size={15} className="project__go" />
+              </Link>
             ))}
           </div>
         </div>

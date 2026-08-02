@@ -237,12 +237,51 @@ html.has-cursor * {
    ============================================================ */
 
 .ccard {
+  --accent: var(--brand);
   transform-style: preserve-3d;
   transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
 }
 .ccard:hover {
   transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
     translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* Per-course accent, so the bloom and the border pick up the colour
+   the cover already uses. */
+.ccard[data-accent='cyan'] { --accent: #22d3ee; }
+.ccard[data-accent='violet'] { --accent: #8b5cf6; }
+.ccard[data-accent='lime'] { --accent: #a3e635; }
+.ccard[data-accent='amber'] { --accent: #fbbf24; }
+.ccard[data-accent='rose'] { --accent: #fb7185; }
+
+/* Accent bloom rising from behind the card on hover — the original
+   card's signature. Sits below content via a negative z-index inside
+   the card's own stacking context. */
+.ccard__glow {
+  position: absolute;
+  inset: -35% -15% auto;
+  height: 65%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 100% at 50% 0%,
+    color-mix(in srgb, var(--accent) 32%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--t4) var(--ease);
+}
+.ccard:hover .ccard__glow {
+  opacity: 1;
+}
+
+/* Keep the card's own content above the bloom. */
+.ccard__cover,
+.ccard__body,
+.ccard__foot {
+  position: relative;
+  z-index: 1;
 }
 
 .ccard__sheen {

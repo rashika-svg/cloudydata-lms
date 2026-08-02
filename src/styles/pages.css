@@ -203,6 +203,391 @@
 }
 
 /* ============================================================
+   Course finder
+   ============================================================ */
+
+.finder {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-2), var(--lift);
+  overflow: hidden;
+}
+
+.finder__head {
+  padding: var(--s6) var(--s6) var(--s5);
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+.finder__eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+.finder__head h2 {
+  font-size: var(--fs-h2);
+}
+.finder__head p {
+  max-width: 60ch;
+  margin: var(--s3) auto 0;
+  color: var(--ink-3);
+  font-size: var(--fs-sm);
+}
+
+.finder__steps {
+  display: flex;
+  justify-content: center;
+  gap: var(--s5);
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: var(--s4) var(--s5);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.finder__steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+  transition: color var(--t2) var(--ease);
+}
+.finder__steps li.is-current,
+.finder__steps li.is-done {
+  color: var(--ink);
+}
+.finder__stepnum {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  transition:
+    background var(--t2) var(--ease),
+    border-color var(--t2) var(--ease),
+    color var(--t2) var(--ease);
+}
+.finder__steps li.is-current .finder__stepnum {
+  border-color: var(--brand);
+  color: var(--brand-text);
+}
+.finder__steps li.is-done .finder__stepnum {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+
+.finder__body {
+  padding: var(--s6);
+}
+
+.finder__q {
+  animation: rise var(--t4) var(--ease-out);
+  text-align: center;
+}
+.finder__q h3 {
+  font-size: var(--fs-h3);
+}
+.finder__q > p {
+  max-width: 56ch;
+  margin: var(--s2) auto var(--s5);
+  color: var(--ink-3);
+  font-size: var(--fs-sm);
+}
+
+.finder__opts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--s3);
+  max-width: 780px;
+  margin-inline: auto;
+}
+.finder__opt {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--surface);
+  text-align: left;
+  transition:
+    border-color var(--t2) var(--ease),
+    background var(--t2) var(--ease),
+    transform var(--t2) var(--ease-out),
+    box-shadow var(--t2) var(--ease);
+}
+.finder__opt:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.finder__opt.is-on {
+  border-color: var(--brand);
+  background: var(--brand-a08);
+}
+.finder__opticon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: var(--r);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  transition:
+    background var(--t2) var(--ease),
+    color var(--t2) var(--ease);
+}
+.finder__opt:hover .finder__opticon {
+  background: var(--brand-a15);
+  color: var(--brand-text);
+}
+.finder__opt > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.finder__opt strong {
+  font-size: var(--fs-sm);
+}
+.finder__opt span span {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.finder__back,
+.finder__again {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: var(--s5);
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+.finder__back:hover,
+.finder__again:hover {
+  color: var(--brand-text);
+}
+
+/* ---- Result ---- */
+
+.finder__result {
+  animation: rise var(--t4) var(--ease-out);
+}
+.finder__picklabel {
+  display: block;
+  margin-bottom: var(--s3);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+.finder__pickcard {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--s5);
+  padding: var(--s4);
+  border: 1px solid var(--brand-a15);
+  border-radius: var(--r-lg);
+  background: var(--brand-a08);
+  transition: border-color var(--t2) var(--ease);
+}
+.finder__pickcard:hover {
+  border-color: var(--brand);
+}
+.finder__pickcover {
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.finder__pickbody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  min-width: 0;
+}
+.finder__pickbody > strong {
+  font-size: var(--fs-h3);
+}
+.finder__pickmeta {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+.finder__why {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s2);
+  font-size: var(--fs-sm);
+}
+.finder__why li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  color: var(--ink-2);
+}
+.finder__why svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--ok);
+}
+
+.finder__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  margin-top: var(--s5);
+}
+.finder__actions .finder__again {
+  margin-top: 0;
+  margin-left: auto;
+}
+
+.finder__alts {
+  margin-top: var(--s6);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--line);
+}
+.finder__altlabel {
+  display: block;
+  margin-bottom: var(--s3);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.finder__alt {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  transition:
+    border-color var(--t2) var(--ease),
+    transform var(--t2) var(--ease);
+}
+.finder__alt + .finder__alt {
+  margin-top: var(--s2);
+}
+.finder__alt:hover {
+  border-color: var(--line-3);
+  transform: translateX(3px);
+}
+.finder__alt strong {
+  flex: 1;
+  font-size: var(--fs-sm);
+  min-width: 0;
+}
+.finder__alt > span {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.finder__alt svg {
+  color: var(--ink-4);
+}
+
+@media (max-width: 720px) {
+  .finder__head,
+  .finder__body {
+    padding: var(--s5) var(--s4);
+  }
+  .finder__pickcard {
+    grid-template-columns: 1fr;
+  }
+  .finder__pickcover {
+    max-width: 240px;
+  }
+  .finder__actions .finder__again {
+    margin-left: 0;
+  }
+  .finder__steplabel {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Projects
+   ============================================================ */
+
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--s3);
+}
+.project {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  padding: var(--s4) var(--s5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  transition:
+    border-color var(--t2) var(--ease),
+    transform var(--t3) var(--ease-out),
+    box-shadow var(--t3) var(--ease);
+}
+.project:hover {
+  border-color: var(--brand-a15);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
+}
+.project__n {
+  flex: none;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--brand-text);
+}
+.project__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.project__body strong {
+  font-size: var(--fs-sm);
+}
+.project__body span {
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+}
+.project__go {
+  flex: none;
+  color: var(--ink-4);
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition:
+    opacity var(--t2) var(--ease),
+    transform var(--t2) var(--ease-out);
+}
+.project:hover .project__go {
+  opacity: 1;
+  transform: none;
+  color: var(--brand-text);
+}
+
+/* ============================================================
    Features
    ============================================================ */
 
