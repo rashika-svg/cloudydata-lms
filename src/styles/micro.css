@@ -44,13 +44,13 @@
       animation-range: entry 0% entry 55%;
     }
 
-    /* Drift lives on the WRAPPER, not the card.
+    /* Drift lives on the WRAPPER, never on the panel itself.
 
-       Putting it on .tutorcard meant this rule (micro.css loads last)
-       overwrote the card's `rise` entrance in pages.css — same
-       element, one `animation` property, later file wins, so the card
-       never animated in at all. Two animations on two elements. */
-    .hero__tutor {
+       An earlier version put this on the panel, where it silently
+       overwrote the panel's `rise` entrance defined in pages.css —
+       same element, one `animation` property, and micro.css loads
+       last. Two animations, two elements. */
+    .hero__visual {
       animation: hero-drift linear both;
       animation-timeline: view();
       animation-range: exit 0% exit 100%;
@@ -297,64 +297,17 @@ html.has-cursor * {
 }
 
 /* ============================================================
-   Instructor card — same interaction language as a course card
+   Hero panel — tilt and sheen on the mock console
 
-   It is the most prominent card on the page and was completely
-   inert. Tilt, sheen and an accent bloom, driven by the same
-   useTilt hook.
+   The panel is the first thing a visitor touches, so it responds to
+   the pointer the same way a course card does. Same useTilt hook,
+   same --tilt/--px properties.
    ============================================================ */
 
-/* No perspective on the wrapper — the card supplies its own inside
-   its transform, and both would compound into an exaggerated tilt. */
-.tutorcard {
-  position: relative;
-  overflow: hidden;
-  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-  transition:
-    transform var(--t4) var(--ease-out),
-    border-color var(--t2) var(--ease),
-    box-shadow var(--t3) var(--ease-out);
-}
-.tutorcard:hover {
-  border-color: var(--brand-a15);
-  box-shadow: var(--shadow-3), var(--glow);
-}
-
-.tutorcard__glow {
-  position: absolute;
-  inset: -40% -20% auto;
-  height: 70%;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(60% 100% at 50% 0%, var(--brand-a15), transparent 70%);
-  opacity: 0;
-  transition: opacity var(--t4) var(--ease);
-}
-.tutorcard:hover .tutorcard__glow {
-  opacity: 1;
-}
-
-.tutorcard__sheen {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(
-    16rem 16rem at var(--px, 50%) var(--py, 50%),
-    rgba(255, 255, 255, 0.09),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity var(--t3) var(--ease);
-}
-.tutorcard:hover .tutorcard__sheen {
-  opacity: 1;
-}
-
-/* Content sits above both layers. */
-.tutorcard > *:not(.tutorcard__glow):not(.tutorcard__sheen) {
-  position: relative;
-  z-index: 2;
+.hero__panel {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform var(--t4) var(--ease-out);
 }
 
 /* Sheen sits *under* the content (z-index -1) exactly as it did

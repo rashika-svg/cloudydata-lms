@@ -15,14 +15,15 @@ import {
   WA_GENERAL,
   whatsappLink,
 } from '../data/site'
+import { useEffect, useState } from 'react'
 import { useApp } from '../store/app'
-import { useTilt } from '../hooks/motion'
+import { useReducedMotion, useTilt } from '../hooks/motion'
 import { CourseCard } from '../components/CourseCard'
 import { CourseFinder } from '../components/CourseFinder'
 import { AccordionItem } from '../components/ui/Accordion'
 import { Button } from '../components/ui/Button'
 import { Icon, type IconName } from '../components/ui/Icon'
-import { Avatar, SectionHead, Stat, Stars } from '../components/ui/Primitives'
+import { Avatar, Ring, SectionHead, Stat, Stars } from '../components/ui/Primitives'
 
 /* One project per course, taken from the real curriculum rather than
    written for the marketing page. Computed once at module load. */
@@ -33,9 +34,113 @@ const PROJECTS = COURSES.flatMap((c) => {
   return project ? [{ slug: c.slug, course: c.short, title: project.title.replace(/^Project:\s*/, '') }] : []
 }).slice(0, 8)
 
+/* ----------------------------------------------------------
+   RotatingWord — the headline's changing noun.
+
+   Slides on a masked track rather than typing. A typewriter destroys
+   and rebuilds the word each cycle, which reflows the line and drags
+   the eye; a masked slide keeps the baseline dead still — which
+   matters when the type is this large.
+   ---------------------------------------------------------- */
+
+const ROLES = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'BI Analyst']
+
+function RotatingWord() {
+  const [index, setIndex] = useState(0)
+  const reduced = useReducedMotion()
+
+  useEffect(() => {
+    if (reduced) return
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % ROLES.length), 2600)
+    return () => window.clearInterval(id)
+  }, [reduced])
+
+  return (
+    <span className="rot" aria-label={ROLES.join(', ')}>
+      {/* Invisible longest string reserves the width so the line never jumps. */}
+      <span className="rot__ghost" aria-hidden="true">
+        Data Scientist
+      </span>
+      <span className="rot__track" style={{ '--rot-i': index } as React.CSSProperties} aria-hidden="true">
+        {ROLES.map((role) => (
+          <span className="rot__word grad-text" key={role}>
+            {role}
+          </span>
+        ))}
+      </span>
+    </span>
+  )
+}
+
+/* ----------------------------------------------------------
+   HeroPanel — a mock learner console.
+
+   Doubles as a product screenshot and as the showcase for the tilt
+   and sheen, so the first thing a visitor touches already responds
+   to them. Content is pulled from the real Data Science syllabus.
+   ---------------------------------------------------------- */
+
+const DS = COURSES.find((c) => c.slug === 'data-science')!
+const ML_MODULE = DS.curriculum.find((m) => m.title === 'Machine Learning') ?? DS.curriculum[0]!
+
+function HeroPanel() {
+  const tiltRef = useTilt<HTMLDivElement>(8)
+  const lessons = ML_MODULE.lessons.slice(0, 5)
+
+  return (
+    <div className="hero__panel" ref={tiltRef} data-cursor="card">
+      <span className="hero__panelglow" aria-hidden="true" />
+      <span className="hero__panelsheen" aria-hidden="true" />
+
+      <div className="console">
+        <div className="console__bar">
+          <span className="console__dots" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="console__title">my-learning · data-science</span>
+        </div>
+
+        <div className="console__body">
+          <div className="console__row">
+            <Ring ratio={0.62} size={78} stroke={7}>
+              <strong>62%</strong>
+            </Ring>
+            <div className="console__meta">
+              <span className="console__eyebrow">Current module</span>
+              <strong>{ML_MODULE.title}</strong>
+              <span className="console__sub">{lessons[3]?.title}</span>
+            </div>
+          </div>
+
+          <ul className="console__list">
+            {lessons.map((l, i) => (
+              <li key={l.id} className={i < 3 ? 'is-done' : ''} style={{ '--i': i } as React.CSSProperties}>
+                <span className="console__check" aria-hidden="true">
+                  <Icon name="check" size={12} strokeWidth={2.6} />
+                </span>
+                {l.title}
+              </li>
+            ))}
+          </ul>
+
+          <div className="console__foot">
+            <span className="console__streak">
+              <Icon name="flame" size={14} /> 12-day streak
+            </span>
+            <span className="console__next">
+              Next live class · Thu 8pm <Icon name="arrow-right" size={13} />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const { enrolled, progressFor } = useApp()
-  const tutorRef = useTilt<HTMLDivElement>(7)
 
   const cheapest = COURSES.reduce((min, c) => (c.priceINR < min.priceINR ? c : min), COURSES[0]!)
   const featured = COURSES.filter((c) =>
@@ -56,11 +161,14 @@ export default function Home() {
       <section className="hero">
         <div className="wrap hero__inner">
           <div className="hero__copy">
-            <span className="hero__eyebrow">
-              <i aria-hidden="true" /> {HERO.eyebrow}
-            </span>
+            <span className="eyebrow">{HERO.eyebrow}</span>
 
-            <h1>{HERO.title}</h1>
+            <h1 className="hero__title">
+              Become a <RotatingWord />
+              <br />
+              <span className="hero__quiet">without going broke.</span>
+            </h1>
+
             <p className="hero__sub">{HERO.sub}</p>
 
             <div className="hero__actions">
@@ -85,37 +193,20 @@ export default function Home() {
                 <Icon name="check-circle" size={15} /> Interview prep from day one
               </li>
             </ul>
+
+            {/* Keeps the one-instructor brand present even though the
+                panel, not the founder, now leads the hero. */}
+            <p className="hero__by">
+              Every class taught by{' '}
+              <Link to="/about">
+                {FOUNDER.name} <Icon name="arrow-right" size={12} />
+              </Link>
+            </p>
           </div>
 
-          {/* Instructor card — the real site leads with the founder. */}
-          <aside className="hero__tutor">
-            <div className="tutorcard" ref={tutorRef} data-cursor="card">
-              <span className="tutorcard__glow" aria-hidden="true" />
-              <span className="tutorcard__sheen" aria-hidden="true" />
-              <Avatar initials={FOUNDER.initials} size={84} />
-              <strong>{FOUNDER.name}</strong>
-              <span className="tutorcard__role">{FOUNDER.role}</span>
-              <p className="tutorcard__quote">“{FOUNDER.teaches}”</p>
-
-              <dl className="tutorcard__facts">
-                <div>
-                  <dt>Experience</dt>
-                  <dd>{FOUNDER.experience}</dd>
-                </div>
-                <div>
-                  <dt>Tracks</dt>
-                  <dd>{COURSES.length}</dd>
-                </div>
-                <div>
-                  <dt>Format</dt>
-                  <dd>Live only</dd>
-                </div>
-              </dl>
-
-              <Link to="/about" className="tutorcard__link">
-                About me <Icon name="arrow-right" size={13} />
-              </Link>
-            </div>
+          {/* The v1 hero visual: a mock of the product itself. */}
+          <aside className="hero__visual">
+            <HeroPanel />
           </aside>
         </div>
 
