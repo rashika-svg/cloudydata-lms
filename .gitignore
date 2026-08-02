@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.probe/
+*.local
+.DS_Store
+.vscode/
+.idea/
+
+# Downloaded Pexels covers — regenerate with `npm run fetch-photos`
+public/covers/
