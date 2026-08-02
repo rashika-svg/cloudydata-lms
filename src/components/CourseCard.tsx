@@ -35,8 +35,11 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
       ref={tiltRef}
       className="ccard rise"
       data-cursor="card"
+      data-accent={course.accent}
       style={{ '--i': Math.min(index, 8) } as React.CSSProperties}
     >
+      {/* Accent bloom behind the card, revealed on hover. */}
+      <span className="ccard__glow" aria-hidden="true" />
       {/* Pointer-tracked sheen — position comes from useTilt's --px/--py. */}
       <span className="ccard__sheen" aria-hidden="true" />
       <Link to={`/courses/${course.slug}`} className="ccard__cover">
