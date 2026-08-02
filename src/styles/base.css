@@ -1,0 +1,784 @@
+/* ============================================================
+   Reset, document, layout helpers, header and footer.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Native smooth scrolling. A transform-based lerp would feel
+     smoother still, but it requires translating a wrapper, which
+     disables position:sticky — and the header, enrolment card,
+     contact channels and player outline all depend on it. */
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + var(--s5));
+  /* Stops the rubber-band from revealing the page behind at the ends. */
+  overscroll-behavior-y: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  transition:
+    background var(--t3) var(--ease),
+    color var(--t3) var(--ease);
+}
+
+/* ============================================================
+   Atmosphere — the data-lab backdrop.
+
+   Two fixed layers behind everything: a technical grid, radially
+   masked so it fades out below the hero, and two slow-drifting
+   accent auroras.
+
+   Both live on pseudo-elements of <body> with negative z-index, so
+   they never enter the scroll layer and never trigger layout while
+   scrolling. The aurora animates transform and opacity only, which
+   keeps it on the compositor.
+
+   Dark mode only: a near-black canvas is what makes this read as
+   depth rather than dirt. Light mode has no backdrop at all.
+   ============================================================ */
+
+:root[data-theme='dark'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, #000 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 100% 60% at 50% 0%, #000 20%, transparent 78%);
+  opacity: 0.65;
+}
+
+:root[data-theme='dark'] body::after {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -3;
+  pointer-events: none;
+  background: radial-gradient(38rem 30rem at 12% -6%, rgba(34, 211, 238, 0.2), transparent 65%),
+    radial-gradient(34rem 28rem at 92% 4%, rgba(139, 92, 246, 0.2), transparent 62%);
+  filter: blur(20px);
+  animation: aurora 26s var(--ease) infinite alternate;
+}
+
+@keyframes aurora {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(-3%, 2%, 0) scale(1.12);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='dark'] body::after {
+    animation: none;
+  }
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: 1.13;
+  letter-spacing: var(--track-h);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--r);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+*::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--r-pill);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--line-3);
+  background-clip: content-box;
+}
+
+/* ============================================================
+   Layout helpers
+   ============================================================ */
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.wrap--narrow {
+  max-width: 820px;
+}
+
+/* More air than a dense app would use — generous vertical rhythm is
+   most of what separates a premium marketing page from a cramped one. */
+.section {
+  padding-block: clamp(var(--s8), 7vw, var(--s9));
+}
+.section--tight {
+  padding-block: var(--s7);
+}
+.section--top {
+  padding-top: var(--s6);
+}
+.section--alt {
+  background: var(--surface-2);
+  border-block: 1px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  gap: var(--s5);
+}
+.grid--2 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.grid--3 {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.page {
+  display: block;
+  animation: pagein var(--t3) var(--ease);
+}
+.page--full {
+  animation: none;
+}
+
+@keyframes pagein {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Mount entrance. An animation, not a persisted hidden state, so it
+   always ends visible and can never leave content blank. */
+.rise {
+  animation: rise var(--t4) var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms * var(--motion));
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: fixed;
+  top: var(--s3);
+  left: var(--s3);
+  z-index: 1000;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transform: translateY(-250%);
+  transition: transform var(--t2) var(--ease);
+}
+.skip:focus-visible {
+  transform: none;
+}
+
+.note {
+  margin-top: var(--s5);
+  font-size: var(--fs-xs);
+  color: var(--ink-4);
+}
+.note--center {
+  text-align: center;
+}
+.note a {
+  color: var(--brand-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--t3) var(--ease),
+    box-shadow var(--t3) var(--ease);
+}
+.nav.is-scrolled {
+  border-bottom-color: var(--line);
+  box-shadow: var(--shadow-1);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s5);
+  height: var(--nav-h);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: var(--track-display);
+}
+.logo__mark {
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border-radius: var(--r);
+  background: var(--brand);
+}
+.logo__mark i {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: #fff;
+}
+.logo__mark i:nth-child(1) {
+  width: 100%;
+}
+.logo__mark i:nth-child(2) {
+  width: 65%;
+  opacity: 0.85;
+}
+.logo__mark i:nth-child(3) {
+  width: 85%;
+  opacity: 0.7;
+}
+.logo__text span {
+  color: var(--brand);
+}
+.logo--light .logo__text {
+  color: var(--on-dark);
+}
+.logo--light .logo__text span {
+  color: var(--brand-hi);
+}
+
+.nav__search {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex: 1;
+  max-width: 340px;
+  padding: 0 var(--s3);
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink-4);
+  transition:
+    border-color var(--t2) var(--ease),
+    box-shadow var(--t2) var(--ease);
+}
+.nav__search:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-a08);
+}
+.nav__search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+.nav__search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--s5);
+  margin-left: auto;
+}
+.nav__links a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: color var(--t2) var(--ease);
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t2) var(--ease);
+}
+.nav__links a:hover {
+  color: var(--ink);
+}
+.nav__links a:hover::after,
+.nav__links a.is-active::after {
+  transform: scaleX(1);
+}
+.nav__links a.is-active {
+  color: var(--ink);
+}
+
+.nav__pip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  /* Not #fff — the accent is light in dark mode, so the foreground
+     has to flip with it. */
+  color: var(--on-brand);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.nav__end {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex: none;
+}
+
+.nav__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  background: none;
+  color: var(--ink-2);
+  transition:
+    background var(--t2) var(--ease),
+    border-color var(--t2) var(--ease),
+    color var(--t2) var(--ease);
+}
+.nav__icon:hover {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.nav__account {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color var(--t2) var(--ease);
+}
+.nav__account:hover {
+  border-color: var(--brand-a15);
+}
+
+.nav__burger {
+  display: none;
+  border: 0;
+  background: none;
+  padding: 6px;
+  color: var(--ink);
+}
+.burger {
+  display: grid;
+  gap: 4px;
+  width: 20px;
+}
+.burger i {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform var(--t3) var(--ease),
+    opacity var(--t2) var(--ease);
+}
+.burger.is-open i:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.burger.is-open i:nth-child(2) {
+  opacity: 0;
+}
+.burger.is-open i:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Mobile drawer */
+.drawer {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  padding: var(--s4) var(--pad) var(--s6);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform var(--t3) var(--ease),
+    opacity var(--t2) var(--ease),
+    visibility 0s linear var(--t3);
+}
+.drawer.is-open {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform var(--t3) var(--ease),
+    opacity var(--t2) var(--ease),
+    visibility 0s;
+}
+.drawer__search {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  height: 42px;
+  padding: 0 var(--s3);
+  margin-bottom: var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--ink-4);
+}
+.drawer__search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  color: var(--ink);
+}
+.drawer nav {
+  display: flex;
+  flex-direction: column;
+}
+.drawer nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s4) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity var(--t3) var(--ease),
+    transform var(--t3) var(--ease),
+    color var(--t2) var(--ease);
+  transition-delay: calc(var(--i) * 45ms * var(--motion));
+}
+.drawer.is-open nav a {
+  opacity: 1;
+  transform: none;
+}
+.drawer nav a.is-active,
+.drawer nav a:hover {
+  color: var(--brand-text);
+}
+
+.drawer__scrim {
+  position: fixed;
+  inset: var(--nav-h) 0 0;
+  z-index: calc(var(--z-nav) - 1);
+  background: rgba(10, 11, 16, 0.45);
+  animation: fade var(--t2) var(--ease);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1080px) {
+  .nav__search {
+    display: none;
+  }
+}
+
+@media (max-width: 939px) {
+  .nav__links,
+  .nav__cta,
+  .nav__account {
+    display: none;
+  }
+  .nav__burger {
+    display: block;
+  }
+  .nav__end {
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 940px) {
+  .drawer,
+  .drawer__scrim {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.foot {
+  background: var(--dark);
+  color: var(--on-dark);
+}
+
+.foot__inner {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: var(--s6);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: var(--s8) var(--pad) var(--s6);
+}
+
+.foot__brand p {
+  margin: var(--s4) 0;
+  max-width: 34ch;
+  font-size: var(--fs-sm);
+  color: rgba(242, 241, 237, 0.62);
+}
+.foot__mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-sm);
+  color: var(--brand-hi);
+}
+.foot__mail:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.foot__col h3 {
+  margin-bottom: var(--s4);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: rgba(242, 241, 237, 0.45);
+}
+.foot__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  font-size: var(--fs-sm);
+}
+.foot__col a {
+  color: rgba(242, 241, 237, 0.75);
+  transition:
+    color var(--t2) var(--ease),
+    transform var(--t2) var(--ease);
+  display: inline-block;
+}
+.foot__col a:hover {
+  color: #fff;
+  transform: translateX(3px);
+}
+.foot__more {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  color: var(--brand-hi) !important;
+}
+.foot__notes li {
+  color: rgba(242, 241, 237, 0.45);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+}
+
+.foot__base {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: var(--s4) var(--pad) var(--s6);
+  border-top: 1px solid rgba(242, 241, 237, 0.12);
+  font-size: var(--fs-xs);
+  color: rgba(242, 241, 237, 0.42);
+}
+.foot__base p:last-child {
+  max-width: 58ch;
+  text-align: right;
+}
+
+@media (max-width: 940px) {
+  .foot__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .foot__base {
+    flex-direction: column;
+  }
+  .foot__base p:last-child {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .foot__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Route loading
+   ============================================================ */
+
+.routeload {
+  height: 3px;
+  overflow: hidden;
+  background: var(--sunk);
+}
+.routeload span {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background: var(--brand);
+  animation: routeslide 800ms var(--ease) infinite;
+}
+
+@keyframes routeslide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(430%);
+  }
+}

@@ -1,0 +1,233 @@
+/* ============================================================
+   Command palette — ⌘K / Ctrl-K.
+
+   Searches courses, pages and actions from one input. Ranking is a
+   small hand-written scorer rather than a fuzzy-search dependency:
+   exact prefix beats word-boundary beats substring, and a course you
+   are already enrolled in floats above one you are not.
+   ============================================================ */
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { COURSES, formatINR } from '../../data/courses'
+import { WA_GENERAL, whatsappLink } from '../../data/site'
+import { useApp } from '../../store/app'
+import { useFocusTrap, useHotkey, useLockBodyScroll } from '../../hooks/util'
+import { Icon, type IconName } from './Icon'
+
+interface Command {
+  id: string
+  label: string
+  hint?: string
+  group: 'Courses' | 'Go to' | 'Actions'
+  icon: IconName
+  keywords?: string
+  run: () => void
+}
+
+function score(haystack: string, needle: string): number {
+  if (!needle) return 1
+  const h = haystack.toLowerCase()
+  const n = needle.toLowerCase()
+  if (h === n) return 100
+  if (h.startsWith(n)) return 80
+  // Word-boundary match — "eng" should find "Data Engineering".
+  if (new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(h)) return 60
+  if (h.includes(n)) return 40
+  return 0
+}
+
+export function CommandPalette() {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [active, setActive] = useState(0)
+
+  const navigate = useNavigate()
+  const { enrolled, isEnrolled, theme, toggleTheme, pushToast } = useApp()
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const trapRef = useFocusTrap<HTMLDivElement>(open)
+
+  useLockBodyScroll(open)
+
+  useHotkey('k', (e) => { e.preventDefault(); setOpen((o) => !o) }, { meta: true, allowInInput: true })
+  useHotkey('Escape', () => setOpen(false), { allowInInput: true })
+
+  const commands = useMemo<Command[]>(() => {
+    const courses: Command[] = COURSES.map((c) => ({
+      id: `course-${c.slug}`,
+      label: c.title,
+      hint: isEnrolled(c.slug) ? 'Enrolled' : `${c.durationLabel} · ${formatINR(c.priceINR)}`,
+      group: 'Courses',
+      icon: 'book',
+      keywords: `${c.short} ${c.category} ${c.tools.join(' ')}`,
+      run: () => navigate(isEnrolled(c.slug) ? `/learn/${c.slug}` : `/courses/${c.slug}`),
+    }))
+
+    const pages: Command[] = [
+      { id: 'p-home', label: 'Home', group: 'Go to', icon: 'home', run: () => navigate('/') },
+      { id: 'p-courses', label: 'All courses', group: 'Go to', icon: 'layers', run: () => navigate('/courses') },
+      {
+        id: 'p-mine',
+        label: 'My learning',
+        hint: enrolled.length ? `${enrolled.length} joined` : undefined,
+        group: 'Go to',
+        icon: 'chart',
+        keywords: 'progress dashboard',
+        run: () => navigate('/my-learning'),
+      },
+      { id: 'p-about', label: 'About Me', group: 'Go to', icon: 'user', run: () => navigate('/about') },
+      { id: 'p-contact', label: 'Contact', group: 'Go to', icon: 'mail', run: () => navigate('/contact') },
+    ]
+
+    const actions: Command[] = [
+      {
+        id: 'a-wa',
+        label: 'Message Ajay on WhatsApp',
+        group: 'Actions',
+        icon: 'whatsapp',
+        keywords: 'enrol enroll ask help contact',
+        run: () => window.open(whatsappLink(WA_GENERAL), '_blank', 'noopener'),
+      },
+      {
+        id: 'a-resume',
+        label: 'Resume last lesson',
+        hint: enrolled[0] ? undefined : 'Join a course first',
+        group: 'Actions',
+        icon: 'play',
+        keywords: 'continue learning',
+        run: () => {
+          const first = enrolled[0]
+          if (first) navigate(`/learn/${first}`)
+          else pushToast('Nothing to resume', { detail: 'Join a course to start.', tone: 'warn' })
+        },
+      },
+      {
+        id: 'a-theme',
+        label: theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme',
+        group: 'Actions',
+        icon: theme === 'dark' ? 'sun' : 'moon',
+        keywords: 'appearance dark light',
+        run: toggleTheme,
+      },
+    ]
+
+    return [...courses, ...pages, ...actions]
+  }, [navigate, enrolled, isEnrolled, theme, toggleTheme, pushToast])
+
+  const results = useMemo(() => {
+    const q = query.trim()
+    const scored = commands
+      .map((c) => {
+        const best = Math.max(score(c.label, q), score(c.keywords ?? '', q) * 0.7)
+        const bonus = c.id.startsWith('course-') && isEnrolled(c.id.slice(7)) ? 5 : 0
+        return { command: c, rank: best + bonus }
+      })
+      .filter((r) => r.rank > 0)
+
+    scored.sort((a, b) => b.rank - a.rank)
+    return scored.slice(0, 9).map((r) => r.command)
+  }, [commands, query, isEnrolled])
+
+  // Any change to the result set returns the highlight to the top row.
+  useEffect(() => setActive(0), [query])
+
+  useEffect(() => {
+    if (!open) return
+    setQuery('')
+    setActive(0)
+    // Focus after the panel starts opening, so the caret does not
+    // appear before the panel does.
+    const t = window.setTimeout(() => inputRef.current?.focus(), 30)
+    return () => window.clearTimeout(t)
+  }, [open])
+
+  useEffect(() => {
+    listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' })
+  }, [active])
+
+  const run = (cmd: Command | undefined) => {
+    if (!cmd) return
+    setOpen(false)
+    cmd.run()
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActive((i) => (results.length ? (i + 1) % results.length : 0))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActive((i) => (results.length ? (i - 1 + results.length) % results.length : 0))
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      run(results[active])
+    }
+  }
+
+  return (
+    <>
+      <button type="button" className="cmdk-trigger" onClick={() => setOpen(true)} aria-label="Search">
+        <Icon name="search" size={15} />
+        <span>Search</span>
+        <kbd>⌘K</kbd>
+      </button>
+
+      {open && (
+        <div className="cmdk" onKeyDown={onKeyDown}>
+          <div className="cmdk__scrim" onClick={() => setOpen(false)} />
+          <div className="cmdk__panel" role="dialog" aria-modal="true" aria-label="Search" ref={trapRef}>
+            <div className="cmdk__field">
+              <Icon name="search" size={17} />
+              <input
+                ref={inputRef}
+                className="cmdk__input"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search courses, pages, actions…"
+                aria-label="Search"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <kbd>esc</kbd>
+            </div>
+
+            <div className="cmdk__list" ref={listRef}>
+              {results.length === 0 && (
+                <p className="cmdk__empty">
+                  Nothing matches <strong>{query}</strong>
+                </p>
+              )}
+
+              {results.map((cmd, i) => {
+                const showGroup = i === 0 || results[i - 1]?.group !== cmd.group
+                return (
+                  <div key={cmd.id}>
+                    {showGroup && <div className="cmdk__group">{cmd.group}</div>}
+                    <button
+                      type="button"
+                      className="cmdk__row"
+                      data-active={i === active}
+                      onPointerMove={() => setActive(i)}
+                      onClick={() => run(cmd)}
+                    >
+                      <Icon name={cmd.icon} size={15} className="cmdk__rowicon" />
+                      <span className="cmdk__rowlabel">{cmd.label}</span>
+                      {cmd.hint && <span className="cmdk__rowhint">{cmd.hint}</span>}
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+
+            <footer className="cmdk__foot">
+              <span>↑↓ navigate</span>
+              <span>↵ open</span>
+              <span>esc close</span>
+            </footer>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

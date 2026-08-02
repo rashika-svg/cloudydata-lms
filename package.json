@@ -1,0 +1,26 @@
+{
+  "name": "cloudydata-lms",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Static LMS front-end demo — dark data-lab theme, hand-rolled microinteractions, zero UI libraries.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "fetch-photos": "node scripts/fetch-photos.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9"
+  }
+}

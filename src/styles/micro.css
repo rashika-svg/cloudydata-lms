@@ -1,0 +1,611 @@
+/* ============================================================
+   Microinteractions.
+
+   Kept in one file so the interaction language is reviewable in one
+   place rather than scattered through component styles.
+
+   Rules held throughout:
+     · transforms and opacity only — nothing animates layout
+     · every transition is under 400ms; feedback should feel instant
+     · nothing is decorative: each one confirms an action, shows
+       position, or reveals affordance
+     · all of it collapses under prefers-reduced-motion via --motion
+   ============================================================ */
+
+/* ============================================================
+   Scroll-driven reveals.
+
+   Native CSS scroll-driven animation: the browser ties the keyframes
+   to the element's own position in the viewport, so there is no
+   observer, no JS, and no state that can get stuck hidden.
+
+   Gated behind @supports and applied only to elements that are
+   already visible by default — if the feature is missing, or the
+   query fails, nothing changes and the content simply shows. That is
+   the opposite of the earlier IntersectionObserver approach, which
+   could and did leave the page blank.
+   ============================================================ */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ccard,
+    .feature,
+    .steps li,
+    .quote,
+    .statband,
+    .aboutme__card,
+    .aboutme__copy,
+    .channel,
+    .panel {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+      /* Runs across the band where the element enters the viewport,
+         and is fully settled well before it reaches centre. */
+      animation-range: entry 0% entry 55%;
+    }
+
+    /* The hero art drifts fractionally as the page moves — enough to
+       feel alive on scroll, far too little to read as parallax. */
+    .tutorcard {
+      animation: hero-drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes scroll-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-drift {
+  to {
+    transform: translateY(-26px);
+  }
+}
+
+/* ============================================================
+   Custom cursor
+
+   Only mounted for fine pointers with hover, and never under reduced
+   motion — so `cursor: none` can never strand a user without a
+   pointer. Every state change is a transform or a colour, so the
+   whole thing stays on the compositor.
+   ============================================================ */
+
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t2) var(--ease);
+}
+.cursor.is-visible {
+  opacity: 1;
+}
+
+.cursor__dot,
+.cursor__ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.cursor__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+  transition:
+    width var(--t2) var(--ease-out),
+    height var(--t2) var(--ease-out),
+    opacity var(--t2) var(--ease),
+    background var(--t2) var(--ease);
+}
+
+.cursor__ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--line-3);
+  transition:
+    width var(--t3) var(--ease-out),
+    height var(--t3) var(--ease-out),
+    border-color var(--t2) var(--ease),
+    background var(--t2) var(--ease),
+    border-radius var(--t3) var(--ease-out),
+    opacity var(--t2) var(--ease);
+}
+
+/* Link or button — the ring opens up and takes the accent. */
+.cursor[data-state='link'] .cursor__ring {
+  width: 54px;
+  height: 54px;
+  border-color: var(--brand);
+  background: var(--brand-a08);
+}
+.cursor[data-state='link'] .cursor__dot {
+  opacity: 0;
+}
+
+/* Card — opens further and fills a touch more, so a whole surface
+   reads as one target rather than a set of small ones. */
+.cursor[data-state='card'] .cursor__ring {
+  width: 74px;
+  height: 74px;
+  border-color: var(--brand-a15);
+  background: var(--brand-a08);
+}
+.cursor[data-state='card'] .cursor__dot {
+  opacity: 0;
+}
+
+/* Text field — collapses to a caret bar. */
+.cursor[data-state='text'] .cursor__ring {
+  width: 2px;
+  height: 26px;
+  border-radius: 1px;
+  border-color: transparent;
+  background: var(--ink);
+}
+.cursor[data-state='text'] .cursor__dot {
+  opacity: 0;
+}
+
+/* Press — everything contracts, so a click feels committed. */
+.cursor.is-down .cursor__ring {
+  width: 26px;
+  height: 26px;
+  background: var(--brand-a15);
+}
+.cursor.is-down[data-state='text'] .cursor__ring {
+  width: 2px;
+  height: 22px;
+}
+
+/* ============================================================
+   Magnetic buttons + ripple
+
+   The magnetic offset arrives as --mag-x/--mag-y from useMagnetic;
+   CSS decides what to do with it. The spring easing is what makes the
+   return feel physical rather than mechanical.
+   ============================================================ */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0);
+}
+.btn:active:not(:disabled) {
+  transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0) scale(0.965);
+  transition-duration: var(--t1);
+}
+.btn:disabled {
+  --mag-x: 0;
+  --mag-y: 0;
+}
+
+.btn__label,
+.btn__icon {
+  position: relative;
+  z-index: 1;
+}
+
+.btn__ripples {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.btn__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.22;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 620ms var(--ease-out) forwards;
+}
+
+@keyframes ripple {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   3D card tilt + pointer sheen
+
+   Rotation and sheen position both come from useTilt. The card keeps
+   its own hover lift; the tilt composes on top of it.
+   ============================================================ */
+
+.ccard {
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+}
+.ccard:hover {
+  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    translateY(-4px);
+}
+
+.ccard__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    18rem 18rem at var(--px, 50%) var(--py, 50%),
+    rgba(255, 255, 255, 0.1),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--t3) var(--ease);
+}
+.ccard:hover .ccard__sheen {
+  opacity: 1;
+}
+
+:root[data-theme='dark'] .ccard:hover {
+  border-color: var(--brand-a15);
+  box-shadow: var(--shadow-3), var(--glow);
+}
+
+/* ============================================================
+   Gradient treatments
+
+   Restored from the original build and kept to four places: the
+   highlighted phrase in the hero, statistics, progress fills and
+   rings. Applying it more widely is what made it read as generated.
+   ============================================================ */
+
+.grad-text,
+.hero__hl,
+.phead__hl,
+.stat__value {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.prog__fill {
+  background: var(--grad-brand);
+}
+
+.ring__fill {
+  stroke: var(--brand);
+}
+
+/* Primary action glows in dark mode, flat in light. */
+:root[data-theme='dark'] .btn--brand {
+  background: var(--grad-brand);
+  color: #04222b;
+  box-shadow: var(--glow);
+}
+:root[data-theme='dark'] .btn--brand:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* ---- Reading progress under the header -------------------
+   scaleX on a pre-sized bar, so scrolling never triggers layout. */
+
+.nav__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nav__progress span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* ---- Nav count pip ---------------------------------------
+   Pops when the enrolment count changes, so the header confirms an
+   action taken elsewhere on the page. */
+
+.nav__pip {
+  animation: pip var(--t3) var(--ease-out);
+}
+
+@keyframes pip {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* ---- Logo ------------------------------------------------
+   The three bars stagger outward on hover — a small sign of life on
+   the one element present on every page. */
+
+.logo__mark i {
+  transition: transform var(--t3) var(--ease-out);
+}
+.logo:hover .logo__mark i:nth-child(1) { transform: scaleX(0.72); }
+.logo:hover .logo__mark i:nth-child(2) { transform: scaleX(1.5); }
+.logo:hover .logo__mark i:nth-child(3) { transform: scaleX(1.1); }
+.logo__mark i {
+  transform-origin: left;
+}
+
+/* ---- WhatsApp action -------------------------------------
+   The glyph tilts like a handset being picked up. Small, and it only
+   fires on the one action the whole site is pointing at. */
+
+.wa svg {
+  transition: transform var(--t3) var(--ease-out);
+}
+.wa:hover svg {
+  transform: rotate(-12deg) scale(1.08);
+}
+
+/* ---- Course card -----------------------------------------
+   The card lifts, the cover eases in, and the primary action gains
+   depth — one gesture across three elements rather than three
+   competing ones. */
+
+.ccard__cta {
+  transition:
+    box-shadow var(--t2) var(--ease),
+    transform var(--t2) var(--ease);
+}
+.ccard:hover .ccard__cta {
+  box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--brand) 55%, transparent);
+}
+
+/* ---- Chips -----------------------------------------------
+   A press should feel like a press. */
+
+.chip:active {
+  transform: scale(0.96);
+}
+.chip {
+  transition:
+    background var(--t2) var(--ease),
+    border-color var(--t2) var(--ease),
+    color var(--t2) var(--ease),
+    transform var(--t1) var(--ease);
+}
+
+/* ---- Section reveal on hover for feature tiles ----------- */
+
+.feature__icon,
+.cat__icon {
+  transition: transform var(--t3) var(--ease-out);
+}
+.feature:hover .feature__icon {
+  transform: rotate(-6deg) scale(1.06);
+}
+
+/* ---- Enrolment confirmation ------------------------------
+   The card's enrolled state flashes once when it is fresh, so the
+   swap is noticed rather than just happening. */
+
+.dbuy__enrolled.is-fresh {
+  animation: freshpop var(--t4) var(--ease-out);
+}
+
+@keyframes freshpop {
+  0% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---- Copy to clipboard -----------------------------------
+   Label and glyph both swap; the row briefly takes the success
+   colour, then returns on its own. */
+
+.copyrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-lg);
+  background: none;
+  color: var(--ink-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: left;
+  transition:
+    border-color var(--t2) var(--ease),
+    color var(--t2) var(--ease),
+    background var(--t2) var(--ease);
+}
+.copyrow:hover {
+  border-color: var(--line-3);
+  color: var(--ink);
+}
+.copyrow.is-copied {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.copyrow svg {
+  flex: none;
+}
+
+/* ---- Back to top -----------------------------------------
+   The ring around it fills with reading progress, so the control
+   reports position as well as offering a way out. */
+
+.totop {
+  position: fixed;
+  right: var(--s5);
+  bottom: var(--s5);
+  z-index: calc(var(--z-nav) - 2);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-2);
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  pointer-events: none;
+  transition:
+    opacity var(--t3) var(--ease),
+    transform var(--t3) var(--ease-out),
+    color var(--t2) var(--ease),
+    border-color var(--t2) var(--ease);
+}
+.totop.is-in {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.totop:hover {
+  color: var(--brand-text);
+  border-color: var(--brand-a15);
+}
+.totop__ring {
+  position: absolute;
+  inset: 0;
+}
+.totop__track {
+  fill: none;
+  stroke: transparent;
+}
+.totop__fill {
+  fill: none;
+  stroke: var(--brand);
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+.totop__arrow {
+  position: relative;
+  transform: rotate(180deg);
+  transition: transform var(--t2) var(--ease-out);
+}
+.totop:hover .totop__arrow {
+  transform: rotate(180deg) translateY(2px);
+}
+
+/* The toaster sits bottom-right too — move the button clear of it
+   rather than letting them overlap. */
+@media (max-width: 520px) {
+  .totop {
+    bottom: calc(var(--s5) + 84px);
+  }
+}
+
+/* ---- Lesson rows -----------------------------------------
+   A curriculum row nudges toward its link on hover, which reads as
+   "this is clickable" without adding a button. */
+
+.lessons li {
+  transition:
+    padding-left var(--t2) var(--ease),
+    background var(--t2) var(--ease);
+}
+.lessons li:hover {
+  padding-left: 6px;
+  background: var(--surface-2);
+}
+
+/* ---- Player outline --------------------------------------
+   Same idea, and the active row already has a brand rule. */
+
+.outline__lesson {
+  transition:
+    background var(--t1) var(--ease),
+    color var(--t1) var(--ease),
+    padding-left var(--t2) var(--ease);
+}
+.outline__lesson:hover {
+  padding-left: calc(var(--s4) + 5px);
+}
+
+/* ---- Play control ----------------------------------------
+   A halo pulses outward so the one control on the video reads as
+   the thing to press. */
+
+.stage__play {
+  position: relative;
+}
+.stage__play::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid var(--brand);
+  border-radius: 50%;
+  opacity: 0;
+  animation: halo 2.6s var(--ease-out) infinite;
+}
+
+@keyframes halo {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* ---- Footer links ---------------------------------------- */
+
+.foot__social a {
+  transition:
+    background var(--t2) var(--ease),
+    color var(--t2) var(--ease),
+    transform var(--t2) var(--ease-out);
+}
+.foot__social a:hover {
+  transform: translateY(-2px);
+}
+
+/* ---- Reduced motion --------------------------------------
+   --motion already collapses every duration token. These are the
+   infinite loops, which must stop outright rather than run fast. */
+
+@media (prefers-reduced-motion: reduce) {
+  .stage__play::after,
+  .ccard__live i,
+  .hero__eyebrow i,
+  .dhero__live i {
+    animation: none;
+  }
+  .totop {
+    transition: opacity 0.001ms;
+  }
+}
