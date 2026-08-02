@@ -144,6 +144,7 @@
   --violet: #6d5ae0;
   --grad-brand: linear-gradient(120deg, #0e7490 0%, #0891b2 42%, #6d5ae0 100%);
   --glow: 0 0 0 1px rgba(14, 116, 144, 0.18), 0 14px 40px -14px rgba(14, 116, 144, 0.4);
+  --grad-surface: linear-gradient(180deg, #ffffff 0%, var(--surface-2) 100%);
 }
 
 :root[data-theme='dark'] {
@@ -196,6 +197,9 @@
   --violet: #8b5cf6;
   --grad-brand: linear-gradient(120deg, #22d3ee 0%, #6ee7f9 38%, #8b5cf6 100%);
   --glow: 0 0 0 1px rgba(34, 211, 238, 0.2), 0 12px 40px -12px rgba(34, 211, 238, 0.45);
+  /* Cards are a soft vertical ramp, not a flat fill — it is what
+     stopped them looking like plain rectangles on the dark canvas. */
+  --grad-surface: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

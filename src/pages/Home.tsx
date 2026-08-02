@@ -16,6 +16,7 @@ import {
   whatsappLink,
 } from '../data/site'
 import { useApp } from '../store/app'
+import { useTilt } from '../hooks/motion'
 import { CourseCard } from '../components/CourseCard'
 import { CourseFinder } from '../components/CourseFinder'
 import { AccordionItem } from '../components/ui/Accordion'
@@ -34,6 +35,7 @@ const PROJECTS = COURSES.flatMap((c) => {
 
 export default function Home() {
   const { enrolled, progressFor } = useApp()
+  const tutorRef = useTilt<HTMLDivElement>(7)
 
   const cheapest = COURSES.reduce((min, c) => (c.priceINR < min.priceINR ? c : min), COURSES[0]!)
   const featured = COURSES.filter((c) =>
@@ -62,7 +64,8 @@ export default function Home() {
             <p className="hero__sub">{HERO.sub}</p>
 
             <div className="hero__actions">
-              <Button to="/courses" size="lg" variant="brand" icon="arrow-right">
+              {/* The only gradient button on the site. */}
+              <Button to="/courses" size="lg" variant="brand" icon="arrow-right" className="btn--gradient">
                 Explore courses
               </Button>
               <a className="wa wa--lg" href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
@@ -86,7 +89,9 @@ export default function Home() {
 
           {/* Instructor card — the real site leads with the founder. */}
           <aside className="hero__tutor">
-            <div className="tutorcard">
+            <div className="tutorcard" ref={tutorRef} data-cursor="card">
+              <span className="tutorcard__glow" aria-hidden="true" />
+              <span className="tutorcard__sheen" aria-hidden="true" />
               <Avatar initials={FOUNDER.initials} size={84} />
               <strong>{FOUNDER.name}</strong>
               <span className="tutorcard__role">{FOUNDER.role}</span>

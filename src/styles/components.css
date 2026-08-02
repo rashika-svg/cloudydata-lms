@@ -527,8 +527,9 @@
     box-shadow var(--t3) var(--ease-out),
     border-color var(--t2) var(--ease);
 }
+/* No transform here — the tilt in micro.css owns this element's
+   transform, and a lift declared later would silently replace it. */
 .ccard:hover {
-  transform: translateY(-4px);
   border-color: var(--line-2);
   box-shadow: var(--shadow-3), var(--lift);
 }
