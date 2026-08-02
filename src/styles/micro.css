@@ -44,9 +44,13 @@
       animation-range: entry 0% entry 55%;
     }
 
-    /* The hero art drifts fractionally as the page moves — enough to
-       feel alive on scroll, far too little to read as parallax. */
-    .tutorcard {
+    /* Drift lives on the WRAPPER, not the card.
+
+       Putting it on .tutorcard meant this rule (micro.css loads last)
+       overwrote the card's `rise` entrance in pages.css — same
+       element, one `animation` property, later file wins, so the card
+       never animated in at all. Two animations on two elements. */
+    .hero__tutor {
       animation: hero-drift linear both;
       animation-timeline: view();
       animation-range: exit 0% exit 100%;
@@ -238,13 +242,29 @@ html.has-cursor * {
 
 .ccard {
   --accent: var(--brand);
+  background: var(--grad-surface);
   transform-style: preserve-3d;
+  isolation: isolate;
+  /* Tilt only — no translateY. The original lifted nothing; the depth
+     came entirely from the rotation, the bloom and the shadow. Adding
+     a lift on top flattens the 3D read into a generic hover-raise. */
   transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition:
+    transform var(--t4) var(--ease-out),
+    border-color var(--t2) var(--ease),
+    box-shadow var(--t3) var(--ease-out);
 }
 .ccard:hover {
-  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
-    translateY(-4px);
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: var(--shadow-3);
+}
+
+/* The title takes the course's own accent — per-course, not brand. */
+.ccard__title a {
+  transition: color var(--t2) var(--ease);
+}
+.ccard:hover .ccard__title a {
+  color: var(--accent);
 }
 
 /* Per-course accent, so the bloom and the border pick up the colour
@@ -260,39 +280,94 @@ html.has-cursor * {
    the card's own stacking context. */
 .ccard__glow {
   position: absolute;
-  inset: -35% -15% auto;
-  height: 65%;
-  z-index: 0;
+  inset: -40% -20% auto;
+  height: 70%;
+  z-index: -2;
   pointer-events: none;
   background: radial-gradient(
     60% 100% at 50% 0%,
-    color-mix(in srgb, var(--accent) 32%, transparent),
+    color-mix(in srgb, var(--accent) 30%, transparent),
     transparent 70%
   );
   opacity: 0;
-  transition: opacity var(--t4) var(--ease);
+  transition: opacity var(--t4) var(--ease-out);
 }
 .ccard:hover .ccard__glow {
   opacity: 1;
 }
 
-/* Keep the card's own content above the bloom. */
-.ccard__cover,
-.ccard__body,
-.ccard__foot {
+/* ============================================================
+   Instructor card — same interaction language as a course card
+
+   It is the most prominent card on the page and was completely
+   inert. Tilt, sheen and an accent bloom, driven by the same
+   useTilt hook.
+   ============================================================ */
+
+/* No perspective on the wrapper — the card supplies its own inside
+   its transform, and both would compound into an exaggerated tilt. */
+.tutorcard {
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition:
+    transform var(--t4) var(--ease-out),
+    border-color var(--t2) var(--ease),
+    box-shadow var(--t3) var(--ease-out);
+}
+.tutorcard:hover {
+  border-color: var(--brand-a15);
+  box-shadow: var(--shadow-3), var(--glow);
 }
 
+.tutorcard__glow {
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 70%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 100% at 50% 0%, var(--brand-a15), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--t4) var(--ease);
+}
+.tutorcard:hover .tutorcard__glow {
+  opacity: 1;
+}
+
+.tutorcard__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    16rem 16rem at var(--px, 50%) var(--py, 50%),
+    rgba(255, 255, 255, 0.09),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--t3) var(--ease);
+}
+.tutorcard:hover .tutorcard__sheen {
+  opacity: 1;
+}
+
+/* Content sits above both layers. */
+.tutorcard > *:not(.tutorcard__glow):not(.tutorcard__sheen) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Sheen sits *under* the content (z-index -1) exactly as it did
+   originally — over the top it washes out the text. */
 .ccard__sheen {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: -1;
   border-radius: inherit;
   pointer-events: none;
   background: radial-gradient(
-    18rem 18rem at var(--px, 50%) var(--py, 50%),
-    rgba(255, 255, 255, 0.1),
+    22rem 22rem at var(--px, 50%) var(--py, 50%),
+    rgba(255, 255, 255, 0.07),
     transparent 60%
   );
   opacity: 0;
@@ -300,11 +375,6 @@ html.has-cursor * {
 }
 .ccard:hover .ccard__sheen {
   opacity: 1;
-}
-
-:root[data-theme='dark'] .ccard:hover {
-  border-color: var(--brand-a15);
-  box-shadow: var(--shadow-3), var(--glow);
 }
 
 /* ============================================================
@@ -333,14 +403,23 @@ html.has-cursor * {
   stroke: var(--brand);
 }
 
-/* Primary action glows in dark mode, flat in light. */
-:root[data-theme='dark'] .btn--brand {
+/* The one gradient button on the site: the hero's primary call to
+   action, opted in explicitly with `btn--gradient`.
+
+   Every other button stays a flat colour. That exclusivity is the
+   whole point — a gradient used once reads as the primary action; a
+   gradient used on every button reads as decoration and stops
+   signalling anything. */
+.btn--gradient {
   background: var(--grad-brand);
-  color: #04222b;
+  border-color: transparent;
+  color: var(--on-brand);
   box-shadow: var(--glow);
 }
-:root[data-theme='dark'] .btn--brand:hover:not(:disabled) {
+.btn--gradient:hover:not(:disabled) {
+  background: var(--grad-brand);
   filter: brightness(1.08);
+  box-shadow: var(--glow);
 }
 
 /* ---- Reading progress under the header -------------------
