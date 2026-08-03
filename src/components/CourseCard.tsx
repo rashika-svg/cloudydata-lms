@@ -143,15 +143,15 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
         </ul>
 
         {showProgress ? (
-          <div className="mt-auto flex flex-col gap-2 pt-4">
+          <div className="mt-auto flex flex-col gap-2 pt-5 pb-1">
             <Progress ratio={p.ratio} size="sm" />
             <span className="text-[0.6875rem] text-on-surface-variant">
               <strong className="font-semibold text-on-surface">{p.pct}%</strong> · {p.done}/{p.total} lessons
             </span>
           </div>
         ) : (
-          <div className="mt-auto flex flex-wrap items-baseline gap-x-2.5 gap-y-1 pt-4">
-            <strong className="text-[1.375rem] leading-none font-bold tracking-tight">
+          <div className="mt-auto flex flex-wrap items-baseline gap-x-2.5 gap-y-1 pt-5 pb-1">
+            <strong className="text-[1.1875rem] leading-none font-bold tracking-tight">
               {formatINR(course.priceINR)}
             </strong>
             <s className="text-[0.8125rem] text-outline">{formatINR(course.mrpINR)}</s>
