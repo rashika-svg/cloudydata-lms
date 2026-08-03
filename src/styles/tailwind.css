@@ -1,0 +1,208 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   Tailwind theme — bound to the Material 3 token layer.
+
+   The M3 roles in tokens.css stay the single source of truth. This
+   file only teaches Tailwind their names, so utilities read as design
+   decisions (`bg-surface-container`, `text-on-surface-variant`,
+   `rounded-lg`, `shadow-e2`) instead of raw values.
+
+   Because every entry points at a CSS variable rather than a literal,
+   the light/dark switch keeps working exactly as before — the theme
+   attribute swaps the variables underneath and every utility follows.
+   ============================================================ */
+
+@theme inline {
+  /* ---- Colour roles ------------------------------------- */
+  --color-primary: var(--m3-primary);
+  --color-on-primary: var(--m3-on-primary);
+  --color-primary-container: var(--m3-primary-container);
+  --color-on-primary-container: var(--m3-on-primary-container);
+
+  --color-secondary: var(--m3-secondary);
+  --color-on-secondary: var(--m3-on-secondary);
+  --color-secondary-container: var(--m3-secondary-container);
+  --color-on-secondary-container: var(--m3-on-secondary-container);
+
+  --color-tertiary: var(--m3-tertiary);
+  --color-tertiary-container: var(--m3-tertiary-container);
+  --color-on-tertiary-container: var(--m3-on-tertiary-container);
+
+  --color-error: var(--m3-error);
+  --color-error-container: var(--m3-error-container);
+  --color-on-error-container: var(--m3-on-error-container);
+
+  --color-surface: var(--m3-surface);
+  --color-surface-lowest: var(--m3-surface-container-lowest);
+  --color-surface-low: var(--m3-surface-container-low);
+  --color-surface-container: var(--m3-surface-container);
+  --color-surface-high: var(--m3-surface-container-high);
+  --color-surface-highest: var(--m3-surface-container-highest);
+
+  --color-on-surface: var(--m3-on-surface);
+  --color-on-surface-variant: var(--m3-on-surface-variant);
+  --color-outline: var(--m3-outline);
+  --color-outline-variant: var(--m3-outline-variant);
+
+  --color-inverse-surface: var(--m3-inverse-surface);
+  --color-inverse-on-surface: var(--m3-inverse-on-surface);
+
+  /* Kept out of the tonal scheme on purpose — a recognised signal. */
+  --color-wa: var(--wa);
+  --color-wa-ink: var(--wa-ink);
+  --color-wa-dark: var(--wa-dark);
+  --color-li: var(--li);
+  --color-ig: var(--ig);
+
+  /* The footer and the CTA bands are dark surfaces in BOTH themes,
+     so they need a pair that does not flip with the scheme. */
+  --color-dark: var(--dark);
+  --color-dark-2: var(--dark-2);
+  --color-on-dark: var(--on-dark);
+
+  --color-ok: var(--ok);
+  --color-ok-container: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-container: var(--warn-bg);
+  --color-star: var(--star);
+
+  /* ---- Breakpoints ---------------------------------------
+     The header swaps to a drawer at 940px and the desktop search
+     drops at 1080px; naming them keeps those decisions readable in
+     the markup rather than scattered as arbitrary values. */
+  --breakpoint-nav: 940px;
+  --breakpoint-wide: 1080px;
+
+  /* ---- Shape scale --------------------------------------- */
+  --radius-xs: var(--shape-xs);
+  --radius-sm: var(--shape-sm);
+  --radius-md: var(--shape-md);
+  --radius-lg: var(--shape-lg);
+  --radius-xl: var(--shape-xl);
+
+  /* ---- Elevation ----------------------------------------- */
+  --shadow-e1: var(--e1);
+  --shadow-e2: var(--e2);
+  --shadow-e3: var(--e3);
+  --shadow-e4: var(--e4);
+
+  /* ---- Type ---------------------------------------------- */
+  --font-sans: var(--font);
+  --font-mono: var(--mono);
+
+  /* ---- Motion --------------------------------------------
+     Durations already collapse under prefers-reduced-motion via
+     --motion, so utilities inherit that behaviour for free. */
+  --ease-emphasized: var(--ease);
+  --ease-decelerate: var(--ease-out);
+  --ease-spring: var(--ease-spring);
+}
+
+/* ============================================================
+   Component layer.
+
+   Only for things utilities genuinely cannot express: the M3 state
+   layer (a pseudo-element whose opacity changes across four states),
+   and pointer-driven effects fed by custom properties from hooks.
+   Everything else belongs in the markup as utilities.
+   ============================================================ */
+
+@layer components {
+  /* M3 state layer. Applied as `state-layer` alongside utilities;
+     the overlay inherits the element's own text colour, which is what
+     makes one rule work across filled, tonal, outlined and text. */
+  .state-layer {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .state-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t2) var(--ease);
+  }
+  .state-layer:hover:not(:disabled)::after {
+    opacity: var(--m3-hover);
+  }
+  .state-layer:focus-visible:not(:disabled)::after {
+    opacity: var(--m3-focus);
+  }
+  .state-layer:active:not(:disabled)::after {
+    opacity: var(--m3-press);
+  }
+  /* Content must clear the overlay. */
+  .state-layer > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Magnetic pull. useMagnetic writes --mag-x/--mag-y; expressing this
+     as utilities would mean an unreadable arbitrary-value transform
+     repeated on every button. */
+  .magnetic {
+    transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0);
+    transition: transform var(--t3) var(--ease-spring);
+  }
+  .magnetic:active:not(:disabled) {
+    transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0) scale(0.965);
+    transition-duration: var(--t1);
+  }
+  .magnetic:disabled {
+    --mag-x: 0;
+    --mag-y: 0;
+  }
+
+  /* Ripple, spawned at the pointer origin by useRipple. */
+  .ripple-host {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .ripple {
+    position: absolute;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.22;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 620ms var(--ease-out) forwards;
+  }
+
+  @keyframes ripple {
+    to {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* 3D tilt, fed by useTilt's --tilt-x/--tilt-y.
+
+     Deliberately NOT on the course cards. A perspective rotation on
+     one card of a three-up grid breaks its alignment with the two
+     beside it — the hovered card reads as skewed rather than lifted.
+     Cards use a straight translate instead; this stays for the single
+     large surfaces (the hero console) where there is nothing adjacent
+     to fall out of line with. */
+  .tilt {
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform var(--t4) var(--ease-out);
+  }
+
+  /* Removed: .sheen and .card-glow.
+
+     Both sat at a negative z-index inside the card, which paints them
+     above the card's own background but BELOW its in-flow content —
+     so the cover image and the text block hid them, and all that
+     showed was a stray blob in the padding gaps. The sheen was also a
+     white radial gradient, invisible by design on a dark surface and
+     a milky smudge on a light one. The per-course accent now lives
+     somewhere it can actually be seen: the hovered outline. */
+}

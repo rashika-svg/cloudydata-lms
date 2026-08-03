@@ -1,10 +1,12 @@
 /* ============================================================
-   Button.
+   Button — Material 3, in Tailwind utilities.
 
-   Product-weight: a background/border change on hover, a small press
-   scale, and an arrow that steps if one is present. No wipes, ripples
-   or magnetic pull — this control appears dozens of times per screen
-   and needs to be quiet.
+   Every variant shares one interaction model: a state layer at 8%
+   hover / 10% focus / 10% press, applied by the `state-layer`
+   component class rather than a hand-picked hover colour per variant.
+
+   Magnetic pull and ripple stay as component classes because both are
+   driven by custom properties written from hooks at pointer speed.
    ============================================================ */
 
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
@@ -12,9 +14,34 @@ import { Link } from 'react-router-dom'
 import { useMagnetic, useRipple } from '../../hooks/motion'
 import { Icon, type IconName } from './Icon'
 
-/** `onDark` is the outline treatment for inverted bands (CTA, footer). */
 type Variant = 'primary' | 'brand' | 'outline' | 'ghost' | 'subtle' | 'danger' | 'onDark'
 type Size = 'sm' | 'md' | 'lg'
+
+const BASE =
+  'state-layer magnetic group/btn inline-flex items-center justify-center gap-2 rounded-full ' +
+  'border border-transparent font-semibold leading-tight whitespace-nowrap ' +
+  'transition-[background-color,border-color,color,box-shadow] duration-200 ' +
+  'disabled:cursor-not-allowed disabled:bg-on-surface/12 disabled:text-on-surface/40 ' +
+  'disabled:border-transparent disabled:shadow-none'
+
+const VARIANT: Record<Variant, string> = {
+  /* Filled — highest emphasis. */
+  brand: 'bg-primary text-on-primary hover:not-disabled:shadow-e1',
+  /* Filled, neutral. */
+  primary: 'bg-on-surface text-surface',
+  /* Filled tonal — the M3 workhorse. */
+  subtle: 'bg-secondary-container text-on-secondary-container',
+  outline: 'border-outline text-primary',
+  ghost: 'text-primary',
+  danger: 'bg-error-container text-on-error-container',
+  onDark: 'border-white/40 text-white',
+}
+
+const SIZE: Record<Size, string> = {
+  sm: 'px-4 py-2 text-xs',
+  md: 'px-5 py-2.5 text-sm',
+  lg: 'px-7 py-3.5 text-base',
+}
 
 interface CommonProps {
   variant?: Variant
@@ -22,8 +49,6 @@ interface CommonProps {
   icon?: IconName
   iconSide?: 'left' | 'right'
   block?: boolean
-  /** Square icon-only button. Provide aria-label when using it. */
-  square?: boolean
   /** Disable the magnetic pull — useful in dense toolbars. */
   magnetic?: boolean
   children?: ReactNode
@@ -61,7 +86,6 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
     icon,
     iconSide = 'right',
     block = false,
-    square = false,
     magnetic = true,
     children,
     className = '',
@@ -72,30 +96,36 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
   const { ripples, spawn, clear } = useRipple()
 
   const classes = [
-    'btn',
-    `btn--${variant}`,
-    `btn--${size}`,
-    block ? 'btn--block' : '',
-    square ? 'btn--square' : '',
+    BASE,
+    VARIANT[variant],
+    SIZE[size],
+    variant === 'ghost' ? 'px-3' : '',
+    block ? 'flex w-full' : '',
     className,
   ]
     .filter(Boolean)
     .join(' ')
 
-  const glyph = icon ? <Icon name={icon} size={size === 'sm' ? 14 : 16} className="btn__icon" /> : null
+  const glyph = icon ? (
+    <Icon
+      name={icon}
+      size={size === 'lg' ? 18 : 16}
+      className="shrink-0 transition-transform duration-200 group-hover/btn:not-disabled:translate-x-0.5"
+    />
+  ) : null
 
   const inner = (
     <>
       {iconSide === 'left' && glyph}
-      {children && <span className="btn__label">{children}</span>}
+      {children && <span>{children}</span>}
       {iconSide === 'right' && glyph}
 
       {/* Ripples self-expire on animationend — nothing accumulates. */}
-      <span className="btn__ripples" aria-hidden="true">
+      <span className="ripple-host" aria-hidden="true">
         {ripples.map((r) => (
           <span
             key={r.id}
-            className="btn__ripple"
+            className="ripple"
             style={{ left: r.x, top: r.y, width: r.size, height: r.size }}
             onAnimationEnd={() => clear(r.id)}
           />
@@ -104,9 +134,6 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
     </>
   )
 
-  // The forwarded ref is merged into the magnetic ref's element by
-  // simply preferring the magnetic one — callers only ever use the
-  // forwarded ref for focus, which still resolves to the same node.
   const shared = { className: classes, onPointerDown: spawn, ...rest }
 
   if ('to' in props && props.to !== undefined) {

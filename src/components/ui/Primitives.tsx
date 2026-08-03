@@ -1,5 +1,10 @@
 /* ============================================================
-   Shared display primitives.
+   Shared display primitives — Material 3, in Tailwind utilities.
+
+   The one exception is Cover: its six geometric layouts are pure
+   positional art driven by a hash, and expressing three absolutely
+   positioned spans × six variants as utilities would be far less
+   readable than the stylesheet it already has.
    ============================================================ */
 
 import { useId, useState, type ReactNode } from 'react'
@@ -19,9 +24,17 @@ function hash(str: string): number {
   return h >>> 0
 }
 
-/* ---- Badge ----------------------------------------------- */
+/* ---- Badge (M3 assist chip) ------------------------------ */
 
 type BadgeTone = 'neutral' | 'brand' | 'ok' | 'warn' | 'dark'
+
+const BADGE_TONE: Record<BadgeTone, string> = {
+  neutral: 'bg-surface-high text-on-surface-variant',
+  brand: 'bg-primary-container text-on-primary-container',
+  ok: 'bg-ok-container text-ok',
+  warn: 'bg-warn-container text-warn',
+  dark: 'bg-inverse-surface text-inverse-on-surface',
+}
 
 export function Badge({
   children,
@@ -35,8 +48,10 @@ export function Badge({
   className?: string
 }) {
   return (
-    <span className={`badge badge--${tone} ${className}`.trim()}>
-      {icon && <Icon name={icon} size={12} strokeWidth={2} />}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-medium whitespace-nowrap ${BADGE_TONE[tone]} ${className}`}
+    >
+      {icon && <Icon name={icon} size={12} />}
       {children}
     </span>
   )
@@ -58,32 +73,40 @@ export function SectionHead({
   center?: boolean
 }) {
   return (
-    <header className={`shead ${center ? 'shead--center' : ''}`}>
+    <header
+      className={`mb-8 flex flex-wrap items-end justify-between gap-6 ${center ? 'flex-col items-center text-center' : ''}`}
+    >
       <div>
-        {eyebrow && <span className="shead__eyebrow">{eyebrow}</span>}
-        <h2>{title}</h2>
-        {sub && <p>{sub}</p>}
+        {eyebrow && (
+          <span className="mb-2 block font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
+            {eyebrow}
+          </span>
+        )}
+        <h2 className={`max-w-[24ch] text-[clamp(1.45rem,1.2rem+1.1vw,2rem)] ${center ? 'mx-auto' : ''}`}>{title}</h2>
+        {sub && (
+          <p className={`mt-3 max-w-[62ch] text-on-surface-variant ${center ? 'mx-auto' : ''}`}>{sub}</p>
+        )}
       </div>
-      {action && <div className="shead__action">{action}</div>}
+      {action && <div>{action}</div>}
     </header>
   )
 }
 
 /* ---- Stars -----------------------------------------------
-   A grey row with a clipped gold row over it, so 4.7 shows a genuine
+   A muted row with a clipped gold row over it, so 4.7 shows a genuine
    partial star instead of being rounded. */
 
 export function Stars({ value, size = 13 }: { value: number; size?: number }) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100))
 
   return (
-    <span className="stars" style={{ '--size': `${size}px` } as React.CSSProperties} aria-hidden="true">
-      <span className="stars__row stars__row--bg">
+    <span className="relative inline-block leading-none" style={{ height: size }} aria-hidden="true">
+      <span className="flex gap-px text-outline-variant">
         {Array.from({ length: 5 }, (_, i) => (
           <Icon key={i} name="star" size={size} filled />
         ))}
       </span>
-      <span className="stars__row stars__row--fg" style={{ width: `${pct}%` }}>
+      <span className="absolute inset-0 flex gap-px overflow-hidden text-star" style={{ width: `${pct}%` }}>
         {Array.from({ length: 5 }, (_, i) => (
           <Icon key={i} name="star" size={size} filled />
         ))}
@@ -94,10 +117,12 @@ export function Stars({ value, size = 13 }: { value: number; size?: number }) {
 
 export function Rating({ value, learners }: { value: number; learners?: number }) {
   return (
-    <span className="rating">
-      <strong>{value.toFixed(1)}</strong>
+    <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
+      <strong className="font-semibold text-warn">{value.toFixed(1)}</strong>
       <Stars value={value} />
-      {learners !== undefined && <span className="rating__n">({learners.toLocaleString('en-IN')})</span>}
+      {learners !== undefined && (
+        <span className="text-xs text-outline">({learners.toLocaleString('en-IN')})</span>
+      )}
     </span>
   )
 }
@@ -116,12 +141,21 @@ export function Progress({
   const pct = Math.round(Math.max(0, Math.min(1, ratio)) * 100)
 
   return (
-    <div className={`prog prog--${size}`}>
-      <div className="prog__track" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+    <div className="flex w-full items-center gap-3">
+      <div
+        className={`relative flex-1 overflow-hidden rounded-full bg-surface-high ${size === 'sm' ? 'h-1' : 'h-1.5'}`}
+        role="progressbar"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         {/* scaleX keeps every increment on the compositor. */}
-        <span className="prog__fill" style={{ transform: `scaleX(${pct / 100})` }} />
+        <span
+          className="absolute inset-0 origin-left rounded-full bg-primary transition-transform duration-700 ease-emphasized"
+          style={{ transform: `scaleX(${pct / 100})` }}
+        />
       </div>
-      {showValue && <span className="prog__val">{pct}%</span>}
+      {showValue && <span className="shrink-0 font-mono text-xs text-on-surface-variant">{pct}%</span>}
     </div>
   )
 }
@@ -145,22 +179,23 @@ export function Ring({
   const gid = useId()
 
   return (
-    <div className="ring" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <circle className="ring__track" cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} />
+    <div className="relative grid shrink-0 place-items-center" style={{ width: size, height: size }}>
+      <svg className="absolute inset-0" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+        <circle className="fill-none stroke-surface-high" cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} />
         <circle
-          className="ring__fill"
+          className="fill-none stroke-primary transition-[stroke-dashoffset] duration-700 ease-emphasized"
           id={gid}
           cx={size / 2}
           cy={size / 2}
           r={r}
           strokeWidth={stroke}
+          strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - clamped)}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </svg>
-      <div className="ring__mid">{children ?? <strong>{pct}%</strong>}</div>
+      <div className="relative font-mono text-xs font-semibold">{children ?? <strong>{pct}%</strong>}</div>
       <span className="sr-only">{pct}% complete</span>
     </div>
   )
@@ -172,12 +207,15 @@ export function Stat({ value, suffix = '', label }: { value: number; suffix?: st
   const { ref, value: shown } = useCountUp(value)
 
   return (
-    <div className="stat">
-      <span className="stat__value" ref={ref}>
+    <div className="flex min-w-0 flex-col gap-1 text-center">
+      <span
+        className="bg-[image:var(--grad-brand)] bg-clip-text text-[clamp(1.8rem,1.3rem+1.7vw,2.6rem)] leading-none font-bold tracking-[-0.026em] text-transparent tabular-nums"
+        ref={ref}
+      >
         {shown.toLocaleString('en-IN')}
         {suffix}
       </span>
-      <span className="stat__label">{label}</span>
+      <span className="text-sm text-on-surface-variant">{label}</span>
     </div>
   )
 }
@@ -186,16 +224,17 @@ export function Stat({ value, suffix = '', label }: { value: number; suffix?: st
 
 export function Avatar({ initials, size = 40 }: { initials: string; size?: number }) {
   return (
-    <span className="avatar" style={{ width: size, height: size, fontSize: size * 0.36 }} aria-hidden="true">
+    <span
+      className="grid shrink-0 place-items-center rounded-full bg-primary-container font-semibold tracking-wide text-on-primary-container"
+      style={{ width: size, height: size, fontSize: size * 0.36 }}
+      aria-hidden="true"
+    >
       {initials}
     </span>
   )
 }
 
-/* ---- Cover art -------------------------------------------
-   No image assets in a static build, so each course gets a
-   deterministic geometric cover from its slug: same course, same
-   artwork, every time, no network request. */
+/* ---- Cover art ------------------------------------------- */
 
 export function Cover({
   slug,
@@ -218,8 +257,8 @@ export function Cover({
 
   return (
     <div className={`cover cover--${variant}`} data-accent={accent} data-rot={rot} aria-hidden="true">
-      {/* Generated geometry sits underneath as the placeholder and the
-          fallback, so there is never an empty box while loading. */}
+      {/* Generated geometry sits underneath as placeholder and fallback,
+          so there is never an empty box while loading. */}
       <span className="cover__a" />
       <span className="cover__b" />
       <span className="cover__c" />
@@ -244,18 +283,21 @@ export function Cover({
 
 /* ---- Lesson kind ----------------------------------------- */
 
-const KIND: Record<LessonKind, { label: string; icon: IconName }> = {
-  video: { label: 'Lesson', icon: 'play' },
-  lab: { label: 'Lab', icon: 'flask' },
-  project: { label: 'Project', icon: 'box' },
-  quiz: { label: 'Checkpoint', icon: 'help' },
+const KIND: Record<LessonKind, { label: string; icon: IconName; cls: string }> = {
+  video: { label: 'Lesson', icon: 'play', cls: 'bg-surface-high text-on-surface-variant' },
+  lab: { label: 'Lab', icon: 'flask', cls: 'bg-warn-container text-warn' },
+  project: { label: 'Project', icon: 'box', cls: 'bg-primary-container text-on-primary-container' },
+  quiz: { label: 'Checkpoint', icon: 'help', cls: 'bg-ok-container text-ok' },
 }
 
 export function KindTag({ kind, showLabel = false }: { kind: LessonKind; showLabel?: boolean }) {
   const meta = KIND[kind]
   return (
-    <span className={`kind kind--${kind}`} title={meta.label}>
-      <Icon name={meta.icon} size={12} strokeWidth={2} filled={kind === 'video'} />
+    <span
+      className={`inline-flex shrink-0 items-center gap-1 rounded-xs px-1.5 py-0.5 text-[0.6875rem] font-medium ${meta.cls}`}
+      title={meta.label}
+    >
+      <Icon name={meta.icon} size={12} filled={kind === 'video'} />
       {showLabel ? meta.label : <span className="sr-only">{meta.label}</span>}
     </span>
   )
@@ -279,12 +321,12 @@ export function Empty({
   children?: ReactNode
 }) {
   return (
-    <div className="empty">
-      <span className="empty__icon">
+    <div className="mb-12 flex flex-col items-center gap-3 rounded-lg border border-dashed border-outline-variant bg-surface-low px-6 py-16 text-center">
+      <span className="grid size-13 place-items-center rounded-full bg-surface-high text-on-surface-variant">
         <Icon name={icon} size={22} />
       </span>
-      <h3>{title}</h3>
-      {body && <p>{body}</p>}
+      <h3 className="text-[1.1875rem]">{title}</h3>
+      {body && <p className="max-w-[52ch] text-sm text-on-surface-variant">{body}</p>}
       {children}
     </div>
   )

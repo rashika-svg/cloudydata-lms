@@ -126,6 +126,12 @@ export function Cursor() {
 
   if (!enabled) return null
 
+  // Kept as component classes rather than utilities: the ring's size,
+  // radius and fill are decided by two independent bits of state
+  // (`data-state` and `.is-down`) that land on the SAME element, and
+  // both are written imperatively so no render happens per frame.
+  // Utilities compose that as nested selectors, which is the wrong
+  // shape — this is one of the cases the cascade genuinely does better.
   return (
     <div className={`cursor ${visible ? 'is-visible' : ''}`} ref={rootRef} aria-hidden="true">
       <span className="cursor__ring" ref={ringRef} />
