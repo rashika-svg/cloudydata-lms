@@ -160,6 +160,16 @@ export function CommandPalette() {
       e.preventDefault()
       setActive((i) => (results.length ? (i - 1 + results.length) % results.length : 0))
     } else if (e.key === 'Enter') {
+      /* This handler sits on the container and so sees Enter from every
+         focusable inside it. If a button has focus, Enter belongs to that
+         button: preventDefault here would suppress its activation and run
+         the highlighted result instead — pressing Enter on the close chip
+         would navigate somewhere rather than close.
+
+         Nothing is lost by deferring. The result rows are buttons that
+         already run themselves on click, and the input is not a button,
+         so the ordinary case — typing, then Enter — still lands here. */
+      if ((e.target as HTMLElement).closest('button')) return
       e.preventDefault()
       run(results[active])
     }
@@ -204,7 +214,25 @@ export function CommandPalette() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd className="rounded-xs border border-outline-variant px-1.5 py-px font-mono text-[10px]">esc</kbd>
+              {/* The chip sits top-right of a dialog and is drawn as a
+                  bordered pill, which is where and how a close button
+                  looks — so it should close. It is also the only pointer
+                  affordance besides the backdrop, and on a touch device
+                  there is no Esc key for the label to refer to.
+
+                  -m-2/p-2 grows the hit area past 24px without moving the
+                  chip: the negative margin and the padding cancel, so the
+                  kbd lands exactly where it did before. */}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close search"
+                className="group -m-2 shrink-0 p-2"
+              >
+                <kbd className="block rounded-xs border border-outline-variant px-1.5 py-px font-mono text-[10px] transition-colors duration-[var(--t2)] group-hover:border-outline group-hover:text-on-surface">
+                  esc
+                </kbd>
+              </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2" ref={listRef}>
