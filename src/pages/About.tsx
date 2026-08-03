@@ -107,7 +107,7 @@ export default function About() {
             {HOW.map(([step, body], i) => (
               <li
                 key={step}
-                className="rise flex gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-6 transition-[transform,box-shadow] duration-300 hover:translate-x-1 hover:shadow-e2"
+                className="rise flex gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-6 transition-shadow duration-500 hover:shadow-e1"
                 style={{ '--i': i } as React.CSSProperties}
               >
                 <span className="flex-none font-mono text-[1.2rem] font-semibold text-primary">
@@ -130,7 +130,7 @@ export default function About() {
           <Grid>
             {PILLARS.map((p, i) => (
               <article
-                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-[transform,box-shadow] duration-300 ease-decelerate hover:-translate-y-1 hover:shadow-e3"
+                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
                 key={p.title}
                 style={{ '--i': i } as React.CSSProperties}
               >

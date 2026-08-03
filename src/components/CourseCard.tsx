@@ -65,7 +65,14 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
 
   return (
     <article
-      className="group/card rise relative flex flex-col overflow-hidden rounded-lg border border-outline-variant/70 bg-surface-lowest transition-[transform,box-shadow,border-color] duration-300 ease-emphasized hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--accent)_50%,transparent)] hover:shadow-e3"
+      /* Deliberately quiet. Five things used to move at once — a 4px
+         lift, a heavy shadow, a fully saturated accent border and a
+         4% image zoom, all in 300ms — and a grid of them flickered
+         as the pointer crossed. What is left is one soft shadow, a
+         faint accent in the outline, and a 1.5% drift on the photo,
+         over 500ms. The card should acknowledge the pointer, not
+         react to it. */
+      className="group/card rise relative flex flex-col overflow-hidden rounded-lg border border-outline-variant/70 bg-surface-lowest transition-[box-shadow,border-color] duration-500 ease-decelerate hover:border-[color-mix(in_srgb,var(--accent)_28%,var(--m3-outline-variant))] hover:shadow-e2"
       data-cursor="card"
       style={
         {
@@ -77,7 +84,7 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
       <Link to={`/courses/${course.slug}`} className="relative block overflow-hidden">
         {/* Wrapper, not the cover itself: .cover carries a scaleX(-1)
             flip on some slugs and a scale here would cancel it. */}
-        <span className="block transition-transform duration-500 ease-emphasized group-hover/card:scale-[1.04]">
+        <span className="block transition-transform duration-700 ease-decelerate group-hover/card:scale-[1.015]">
           <Cover slug={course.slug} accent={course.accent} />
         </span>
 
@@ -114,7 +121,7 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
         <h3 className="min-h-[2.6em] text-[1.0625rem] leading-[1.3] font-semibold">
           <Link
             to={`/courses/${course.slug}`}
-            className="line-clamp-2 transition-colors duration-200 group-hover/card:text-primary"
+            className="line-clamp-2 transition-colors duration-300 group-hover/card:text-primary"
           >
             {course.title}
           </Link>

@@ -48,6 +48,12 @@ const PROJECTS = COURSES.flatMap((c) => {
    and rebuilds the word each cycle, which reflows the line and drags
    the eye; a masked slide keeps the baseline dead still — which
    matters when the type is this large.
+
+   The mask is deliberately taller than the 1.02em line box: descenders
+   ('y' in Analyst) sit below it and a flush window shears them off. So
+   the window overhangs 0.2em, a negative margin gives that overhang
+   back to the line so nothing moves, and the track gains a 0.3em gap
+   so the next role stays out of the exposed strip.
    ---------------------------------------------------------- */
 
 const ROLES = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'BI Analyst']
@@ -64,7 +70,7 @@ function RotatingWord() {
 
   return (
     <span
-      className="relative inline-block h-[1.02em] overflow-hidden align-bottom"
+      className="relative inline-block h-[1.22em] mb-[-0.2em] overflow-hidden align-bottom"
       aria-label={ROLES.join(', ')}
     >
       {/* Invisible longest string reserves the width so the line never jumps. */}
@@ -72,11 +78,11 @@ function RotatingWord() {
         Data Scientist
       </span>
       <span
-        className="absolute inset-0 flex flex-col transition-transform duration-600 ease-spring"
+        className="absolute inset-0 flex flex-col gap-[0.3em] transition-transform duration-600 ease-spring"
         style={
           {
             '--rot-i': index,
-            transform: 'translateY(calc(var(--rot-i) * -1.02em))',
+            transform: 'translateY(calc(var(--rot-i) * -1.32em))',
           } as React.CSSProperties
         }
         aria-hidden="true"
@@ -355,7 +361,7 @@ export default function Home() {
           <Grid>
             {PILLARS.map((p, i) => (
               <article
-                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-[transform,box-shadow] duration-300 ease-decelerate hover:-translate-y-1 hover:shadow-e3"
+                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
                 key={p.title}
                 style={{ '--i': i } as React.CSSProperties}
               >
@@ -385,7 +391,7 @@ export default function Home() {
             {PROJECTS.map((p, i) => (
               <Link
                 to={`/courses/${p.slug}`}
-                className="group rise flex items-center gap-4 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-4 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-primary/16 hover:shadow-e2"
+                className="group rise flex items-center gap-4 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-4 transition-[border-color,box-shadow] duration-500 ease-decelerate hover:border-primary/16 hover:shadow-e1"
                 key={`${p.slug}-${p.title}`}
                 style={{ '--i': Math.min(i, 6) } as React.CSSProperties}
               >
