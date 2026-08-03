@@ -527,7 +527,7 @@ html.has-cursor * {
   background: var(--ok-bg);
   color: var(--ok);
 }
-.copyrow svg {
+.copyrow .mi {
   flex: none;
 }
 

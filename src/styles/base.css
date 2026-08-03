@@ -118,6 +118,10 @@ svg {
   max-width: 100%;
 }
 
+/* .mi marks a Material Symbol — the class every <Icon> carries, so
+   rules can target the icon set without also catching the progress
+   rings and brand marks, which are hand-drawn SVG. */
+
 button,
 input,
 textarea,
@@ -648,38 +652,112 @@ a {
 
 /* ============================================================
    Footer
+
+   The CTA band above it on Home and About is the same --dark, so
+   without a seam the two merge into one long slab. A brand-tinted
+   hairline across the top draws that edge, and doubles as the one
+   accent the footer is allowed.
    ============================================================ */
 
 .foot {
+  position: relative;
   background: var(--dark);
   color: var(--on-dark);
+  /* Own stacking context, so the seam and wash cannot escape over
+     a sticky element from the page above. */
+  isolation: isolate;
+}
+
+/* Seam. Brightest at the left third, under the brand block, rather
+   than a symmetric fade — it reads as light falling across the edge
+   instead of a centred underline. */
+.foot::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-hi) 22%,
+    rgba(242, 241, 237, 0.16) 55%,
+    transparent
+  );
+  opacity: 0.7;
+}
+
+/* A very soft wash behind the brand column, so the top-left corner
+   has some depth instead of reading as flat paint. */
+.foot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(42rem 22rem at 8% 0%, rgba(8, 145, 178, 0.16), transparent 68%);
 }
 
 .foot__inner {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
-  gap: var(--s6);
+  grid-template-columns: 1.7fr 1fr 0.85fr 1.15fr;
+  gap: var(--s6) var(--s5);
   max-width: var(--maxw);
   margin-inline: auto;
-  padding: var(--s8) var(--pad) var(--s6);
+  padding: var(--s8) var(--pad) var(--s7);
 }
 
 .foot__brand p {
-  margin: var(--s4) 0;
+  margin: var(--s4) 0 0;
   max-width: 34ch;
   font-size: var(--fs-sm);
   color: rgba(242, 241, 237, 0.62);
 }
-.foot__mail {
-  display: inline-flex;
+
+/* Availability signal. Static dot — the site already pulses one in
+   the hero and on live course cards, and a third would be noise. */
+.foot__brand .foot__reply {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: var(--fs-sm);
-  color: var(--brand-hi);
+  gap: 8px;
+  margin-top: var(--s4);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.02em;
+  color: rgba(242, 241, 237, 0.5);
 }
-.foot__mail:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.foot__reply i {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--wa);
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.16);
+}
+
+.foot__social {
+  display: flex;
+  gap: 10px;
+  margin-top: var(--s5);
+}
+.foot__social a {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(242, 241, 237, 0.14);
+  border-radius: var(--r);
+  color: rgba(242, 241, 237, 0.72);
+  background: rgba(242, 241, 237, 0.03);
+}
+.foot__social a:hover {
+  border-color: var(--brand-hi);
+  background: var(--brand-hi);
+  color: var(--dark);
+}
+.foot__social a:focus-visible {
+  outline: 2px solid var(--brand-hi);
+  outline-offset: 2px;
 }
 
 .foot__col h3 {
@@ -716,37 +794,133 @@ a {
   gap: 5px;
   color: var(--brand-hi) !important;
 }
-.foot__notes li {
-  color: rgba(242, 241, 237, 0.45);
+
+/* ---- Reach column ----------------------------------------
+   Labelled rows, not a fourth list of bare links: the channel
+   and the value need different weights, and the icon makes the
+   column scannable at a glance. */
+
+.foot__col--reach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+.foot__col--reach h3 {
+  margin-bottom: var(--s1);
+}
+.foot__row {
+  display: flex !important;
+  align-items: center;
+  gap: var(--s3);
+  transform: none !important;
+}
+.foot__row-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--r);
+  border: 1px solid rgba(242, 241, 237, 0.12);
+  background: rgba(242, 241, 237, 0.04);
+  color: rgba(242, 241, 237, 0.75);
+  transition:
+    background var(--t2) var(--ease),
+    border-color var(--t2) var(--ease),
+    color var(--t2) var(--ease);
+}
+.foot__row-icon--wa {
+  color: var(--wa);
+  border-color: rgba(37, 211, 102, 0.28);
+  background: rgba(37, 211, 102, 0.1);
+}
+.foot__row:hover .foot__row-icon {
+  border-color: var(--brand-hi);
+  background: var(--brand-hi);
+  color: var(--dark);
+}
+.foot__row:hover .foot__row-icon--wa {
+  border-color: var(--wa);
+  background: var(--wa);
+  color: var(--wa-ink);
+}
+.foot__row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+  color: rgba(242, 241, 237, 0.88);
+  transition: color var(--t2) var(--ease);
+  /* Long addresses must wrap rather than push the grid column. */
+  overflow-wrap: anywhere;
+}
+.foot__row:hover .foot__row-text {
+  color: #fff;
+}
+.foot__row-text em {
   font-family: var(--mono);
   font-size: var(--fs-micro);
+  font-style: normal;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: rgba(242, 241, 237, 0.42);
 }
+
+/* ---- Base bar -------------------------------------------- */
 
 .foot__base {
   display: flex;
   justify-content: space-between;
-  gap: var(--s4);
+  align-items: start;
+  gap: var(--s4) var(--s6);
   flex-wrap: wrap;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding: var(--s4) var(--pad) var(--s6);
-  border-top: 1px solid rgba(242, 241, 237, 0.12);
+  padding: var(--s5) var(--pad) var(--s6);
+  border-top: 1px solid rgba(242, 241, 237, 0.1);
   font-size: var(--fs-xs);
   color: rgba(242, 241, 237, 0.42);
 }
-.foot__base p:last-child {
-  max-width: 58ch;
+.foot__demo {
+  max-width: 64ch;
   text-align: right;
 }
+.foot__demo a {
+  color: rgba(242, 241, 237, 0.62);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.foot__demo a:hover {
+  color: var(--brand-hi);
+}
+/* Marks the disclaimer as a status, so it is not mistaken for a
+   second copyright line. */
+.foot__tag {
+  display: inline-block;
+  margin-right: 7px;
+  padding: 1px 7px;
+  border: 1px solid rgba(242, 241, 237, 0.16);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: rgba(242, 241, 237, 0.55);
+}
 
-@media (max-width: 940px) {
+@media (max-width: 1040px) {
   .foot__inner {
     grid-template-columns: 1fr 1fr;
+    gap: var(--s7) var(--s6);
+  }
+  .foot__brand {
+    grid-column: 1 / -1;
   }
   .foot__base {
     flex-direction: column;
   }
-  .foot__base p:last-child {
+  .foot__demo {
     text-align: left;
   }
 }
@@ -754,6 +928,7 @@ a {
 @media (max-width: 560px) {
   .foot__inner {
     grid-template-columns: 1fr;
+    padding-top: var(--s7);
   }
 }
 
