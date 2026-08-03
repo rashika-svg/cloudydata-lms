@@ -218,7 +218,7 @@ export default function Contact() {
 
       <Section tone="alt">
         <Wrap narrow>
-          <SectionHead eyebrow="Questions" title="Asked most often" center />
+          <SectionHead eyebrow="Questions" title="Asked most often" />
           <div className="flex flex-col">
             {FAQS.slice(0, 5).map((f, i) => (
               <AccordionItem key={f.q} title={f.q} defaultOpen={i === 0}>
