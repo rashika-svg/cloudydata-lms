@@ -97,7 +97,7 @@ export default function Contact() {
             {CHANNELS.map((c, i) => (
               <a
                 key={c.label}
-                className={`group rise flex items-center gap-4 rounded-lg border p-4 transition-[border-color,transform,box-shadow] duration-200 hover:translate-x-0.5 hover:shadow-e1 ${
+                className={`group rise flex items-center gap-4 rounded-lg border p-4 transition-[border-color,box-shadow] duration-500 ease-decelerate hover:shadow-e1 ${
                   c.primary
                     ? 'border-wa/45 bg-wa/8'
                     : 'border-outline-variant bg-surface-lowest hover:border-outline'
