@@ -1,7 +1,27 @@
+/* ============================================================
+   Footer.
+
+   Four bands of decreasing weight: brand, link columns, direct
+   contact, then the legal/demo base. The contact column is built
+   from labelled rows rather than a fourth list of bare links —
+   four identical stacks read as a sitemap dump, and the channels
+   are the one thing here a visitor actually acts on.
+
+   Social marks and the contact rows deliberately do not overlap:
+   the row carries the numbers you copy, the marks carry the
+   profiles you open.
+   ============================================================ */
+
 import { Link } from 'react-router-dom'
 import { COURSES } from '../../data/courses'
 import { CONTACT, FOUNDER, NAV, WA_GENERAL, whatsappLink } from '../../data/site'
-import { Icon } from '../ui/Icon'
+import { Icon, type IconName } from '../ui/Icon'
+
+const SOCIAL: { label: string; href: string; icon: IconName }[] = [
+  { label: 'WhatsApp', href: whatsappLink(WA_GENERAL), icon: 'whatsapp' },
+  { label: 'LinkedIn', href: CONTACT.linkedin, icon: 'linkedin' },
+  { label: 'Instagram', href: CONTACT.instagram, icon: 'instagram' },
+]
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -20,28 +40,37 @@ export function Footer() {
               Cloudy<span>Data</span>
             </span>
           </Link>
+
           <p>
             The most affordable live classes in data analytics and data science — taught by {FOUNDER.name}, not a
             rotating bench of instructors.
           </p>
 
-          <div className="foot__social" aria-label="Social links">
-            <a href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-              <Icon name="whatsapp" size={17} />
-            </a>
-            <a href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <Icon name="linkedin" size={17} />
-            </a>
-            <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <Icon name="instagram" size={17} />
-            </a>
-            <a href={`mailto:${CONTACT.email}`} aria-label="Email">
+          <p className="foot__reply">
+            <i aria-hidden="true" />
+            {CONTACT.replyTime}
+          </p>
+
+          <div className="foot__social">
+            {SOCIAL.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                title={s.label}
+              >
+                <Icon name={s.icon} size={17} />
+              </a>
+            ))}
+            <a href={`mailto:${CONTACT.email}`} aria-label="Email" title="Email">
               <Icon name="mail" size={17} />
             </a>
           </div>
         </div>
 
-        <div className="foot__col">
+        <nav className="foot__col" aria-label="Courses">
           <h3>Courses</h3>
           <ul>
             {COURSES.slice(0, 6).map((c) => (
@@ -55,9 +84,9 @@ export function Footer() {
               </Link>
             </li>
           </ul>
-        </div>
+        </nav>
 
-        <div className="foot__col">
+        <nav className="foot__col" aria-label="Site">
           <h3>CloudyData</h3>
           <ul>
             {NAV.map((n) => (
@@ -69,38 +98,49 @@ export function Footer() {
               <Link to="/my-learning">My learning</Link>
             </li>
           </ul>
-        </div>
+        </nav>
 
-        <div className="foot__col">
+        <div className="foot__col foot__col--reach">
           <h3>Reach me</h3>
-          <ul>
-            <li>
-              <a href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
-                {CONTACT.phoneDisplay}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-            </li>
-            <li>
-              <a href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer">
-                LinkedIn
-              </a>
-            </li>
-            <li>
-              <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer">
-                Instagram
-              </a>
-            </li>
-          </ul>
+
+          <a className="foot__row" href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
+            <span className="foot__row-icon foot__row-icon--wa">
+              <Icon name="whatsapp" size={16} />
+            </span>
+            <span className="foot__row-text">
+              <em>WhatsApp</em>
+              {CONTACT.phoneDisplay}
+            </span>
+          </a>
+
+          <a className="foot__row" href={`mailto:${CONTACT.email}`}>
+            <span className="foot__row-icon">
+              <Icon name="mail" size={16} />
+            </span>
+            <span className="foot__row-text">
+              <em>Email</em>
+              {CONTACT.email}
+            </span>
+          </a>
+
+          <a className="foot__row" href={`https://${CONTACT.site}`} target="_blank" rel="noopener noreferrer">
+            <span className="foot__row-icon">
+              <Icon name="external" size={16} />
+            </span>
+            <span className="foot__row-text">
+              <em>Live site</em>
+              {CONTACT.site}
+            </span>
+          </a>
         </div>
       </div>
 
       <div className="foot__base">
-        <p>© {year} CloudyData — front-end demo build.</p>
-        <p>
-          A portfolio project. Course content mirrors {CONTACT.site}; enrolment, payment and class delivery are not
-          implemented here. Course photography from{' '}
+        <p>© {year} CloudyData. All rights reserved.</p>
+        <p className="foot__demo">
+          <span className="foot__tag">Demo</span>
+          Front-end portfolio build. Course content mirrors {CONTACT.site}; enrolment, payment and class delivery are
+          not implemented. Photography from{' '}
           <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer">
             Pexels
           </a>

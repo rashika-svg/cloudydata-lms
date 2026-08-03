@@ -6,102 +6,128 @@
    Button
    ============================================================ */
 
+/* Material 3 buttons.
+
+   Full-radius by default, and every variant expresses interaction
+   through a STATE LAYER — a currentColor overlay at 8% on hover and
+   10% on press — rather than by swapping the background. That is
+   what keeps hover consistent across filled, tonal, outlined and
+   text buttons without hand-tuning a hover colour for each. */
+
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5em;
-  padding: 0.62em 1.15em;
+  padding: 0.66em 1.35em;
   border: 1px solid transparent;
-  border-radius: var(--r);
+  border-radius: var(--shape-full);
   background: none;
-  color: var(--ink);
+  color: var(--m3-on-surface);
   font-size: var(--fs-sm);
-  font-weight: 650;
-  line-height: 1.25;
+  font-weight: 600;
+  line-height: 1.3;
   white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
   transition:
     background var(--t2) var(--ease),
     border-color var(--t2) var(--ease),
     color var(--t2) var(--ease),
     box-shadow var(--t2) var(--ease),
-    transform var(--t1) var(--ease),
     opacity var(--t2) var(--ease);
 }
-.btn:active:not(:disabled) {
-  transform: translateY(1px);
+
+/* The state layer itself. */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--t2) var(--ease);
+  pointer-events: none;
 }
+.btn:hover:not(:disabled)::after {
+  opacity: var(--m3-hover);
+}
+.btn:focus-visible:not(:disabled)::after {
+  opacity: var(--m3-focus);
+}
+.btn:active:not(:disabled)::after {
+  opacity: var(--m3-press);
+}
+
 .btn:disabled {
-  opacity: 0.45;
+  /* M3 disabled: 38% on-surface, 12% container. No colour retained. */
+  background: color-mix(in srgb, var(--m3-on-surface) 12%, transparent);
+  border-color: transparent;
+  color: color-mix(in srgb, var(--m3-on-surface) 38%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
 }
+
 .btn__icon {
   flex: none;
+  position: relative;
+  z-index: 1;
   transition: transform var(--t2) var(--ease);
 }
 .btn:hover:not(:disabled) .btn__icon {
   transform: translateX(2px);
 }
 
-.btn--primary {
-  background: var(--ink);
-  color: var(--surface);
-}
-.btn--primary:hover:not(:disabled) {
-  background: var(--ink-2);
-}
-/* Foreground and shadow both derive from the brand token, so changing
-   the accent can never strand white text on a light colour or leave a
-   shadow tinted from the previous palette. */
+/* -- Filled: the highest-emphasis action -- */
 .btn--brand {
-  background: var(--brand);
-  color: var(--on-brand);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--brand) 30%, transparent);
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
 }
 .btn--brand:hover:not(:disabled) {
-  background: var(--brand-hi);
-  color: var(--on-brand);
-  box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--brand) 55%, transparent);
+  box-shadow: var(--e1);
 }
-.btn--outline {
-  border-color: var(--line-2);
-  background: var(--surface);
+
+/* -- Filled, neutral -- */
+.btn--primary {
+  background: var(--m3-on-surface);
+  color: var(--m3-surface);
 }
-.btn--outline:hover:not(:disabled) {
-  border-color: var(--line-3);
-  background: var(--surface-2);
-}
-.btn--ghost {
-  color: var(--ink-2);
-}
-.btn--ghost:hover:not(:disabled) {
-  background: var(--surface-2);
-  color: var(--ink);
-}
+
+/* -- Tonal: medium emphasis, the M3 workhorse -- */
 .btn--subtle {
-  background: var(--surface-2);
-  color: var(--ink-2);
+  background: var(--m3-secondary-container);
+  color: var(--m3-on-secondary-container);
 }
+
+/* -- Outlined -- */
+.btn--outline {
+  border-color: var(--m3-outline);
+  color: var(--m3-primary);
+}
+
+/* -- Text -- */
+.btn--ghost {
+  padding-inline: 0.85em;
+  color: var(--m3-primary);
+}
+
 .btn--danger {
-  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
-  background: var(--brand-a08);
-  color: var(--brand-text);
+  background: var(--m3-error-container);
+  color: var(--m3-on-error-container);
 }
+
 .btn--onDark {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
-}
-.btn--onDark:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.55);
 }
 
 .btn--sm {
-  padding: 0.45em 0.85em;
+  padding: 0.48em 1em;
   font-size: var(--fs-xs);
 }
 .btn--lg {
-  padding: 0.82em 1.6em;
+  padding: 0.85em 1.7em;
   font-size: var(--fs-body);
 }
 .btn--block {
@@ -117,35 +143,57 @@
    what it means.
    ============================================================ */
 
+/* Tonal button in WhatsApp's own colour — M3 shape and state layer,
+   but the green is kept because it is a recognised signal. */
 .wa {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.55em;
-  padding: 0.62em 1.15em;
-  border: 1px solid color-mix(in srgb, var(--wa) 55%, transparent);
-  border-radius: var(--r);
-  background: color-mix(in srgb, var(--wa) 14%, transparent);
+  padding: 0.66em 1.35em;
+  border: 1px solid transparent;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--wa) 18%, var(--m3-surface-container-lowest));
   color: var(--wa-dark);
   font-size: var(--fs-sm);
-  font-weight: 650;
-  line-height: 1.25;
+  font-weight: 600;
+  line-height: 1.3;
   white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
   transition:
     background var(--t2) var(--ease),
-    border-color var(--t2) var(--ease),
     color var(--t2) var(--ease),
-    transform var(--t1) var(--ease);
+    box-shadow var(--t2) var(--ease);
+}
+.wa::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--t2) var(--ease);
+  pointer-events: none;
+}
+.wa:hover::after {
+  opacity: var(--m3-hover);
+}
+.wa:focus-visible::after {
+  opacity: var(--m3-focus);
+}
+.wa:active::after {
+  opacity: var(--m3-press);
 }
 .wa:hover {
-  background: var(--wa);
-  border-color: var(--wa);
-  color: var(--wa-ink);
+  box-shadow: var(--e1);
 }
-.wa:active {
-  transform: translateY(1px);
+.wa > * {
+  position: relative;
+  z-index: 1;
 }
-.wa svg {
+.wa svg,
+.wa .mi {
   flex: none;
 }
 .wa--sm {
@@ -199,38 +247,35 @@
    Badge
    ============================================================ */
 
+/* M3 assist chip: 8px radius, tonal container, no outline when filled. */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  padding: 0.28em 0.65em;
-  border: 1px solid var(--line-2);
-  border-radius: var(--r-pill);
-  background: var(--surface-2);
-  color: var(--ink-2);
+  padding: 0.3em 0.7em;
+  border: 1px solid transparent;
+  border-radius: var(--shape-sm);
+  background: var(--m3-surface-container-high);
+  color: var(--m3-on-surface-variant);
   font-size: var(--fs-xs);
-  font-weight: 650;
+  font-weight: 600;
   white-space: nowrap;
 }
 .badge--brand {
-  border-color: color-mix(in srgb, var(--brand) 30%, transparent);
-  background: var(--brand-a08);
-  color: var(--brand-text);
+  background: var(--m3-primary-container);
+  color: var(--m3-on-primary-container);
 }
 .badge--ok {
-  border-color: color-mix(in srgb, var(--ok) 32%, transparent);
   background: var(--ok-bg);
   color: var(--ok);
 }
 .badge--warn {
-  border-color: color-mix(in srgb, var(--warn) 32%, transparent);
   background: var(--warn-bg);
   color: var(--warn);
 }
 .badge--dark {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--surface);
+  background: var(--m3-inverse-surface);
+  color: var(--m3-inverse-on-surface);
 }
 
 /* ============================================================
@@ -502,13 +547,15 @@
    Course card
    ============================================================ */
 
+/* M3 elevated card: no outline, depth from the container ladder plus
+   a level-1 shadow, rising to level-3 on hover. */
 .ccard {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-1), var(--lift);
+  border: 1px solid transparent;
+  border-radius: var(--shape-lg);
+  background: var(--m3-surface-container-low);
+  box-shadow: var(--e1);
   overflow: hidden;
   transition:
     transform var(--t3) var(--ease-out),
@@ -685,9 +732,8 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--s2);
-  padding: var(--s3) var(--s4);
-  border-top: 1px solid var(--line);
-  background: var(--surface-2);
+  padding: var(--s3) var(--s4) var(--s4);
+  background: transparent;
 }
 .ccard__cta {
   justify-content: center;
@@ -742,12 +788,12 @@
    Panel & empty
    ============================================================ */
 
+/* M3 filled card. */
 .panel {
   padding: var(--s5);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-1), var(--lift);
+  border: 1px solid transparent;
+  border-radius: var(--shape-lg);
+  background: var(--m3-surface-container-low);
 }
 .panel + .panel {
   margin-top: var(--s5);
@@ -1043,7 +1089,9 @@
   border-color: var(--line-2);
   color: var(--ink-2);
 }
-.cmdk-trigger span {
+/* :not(.mi) throughout — the icon is a span too now, and the label
+   rules below would otherwise stretch it or hide it. */
+.cmdk-trigger span:not(.mi) {
   min-width: 62px;
   text-align: left;
 }
@@ -1185,7 +1233,7 @@
 }
 
 @media (max-width: 780px) {
-  .cmdk-trigger span,
+  .cmdk-trigger span:not(.mi),
   .cmdk-trigger kbd {
     display: none;
   }
@@ -1223,14 +1271,17 @@
   font-size: var(--fs-sm);
   font-weight: 600;
 }
+/* M3 outlined text field: 1px outline at rest, 2px primary when
+   focused, and no glow ring — the outline itself carries the state. */
 .fld input,
 .fld textarea,
 .fld select {
   width: 100%;
-  padding: 0.65em 0.8em;
-  border: 1px solid var(--line-2);
-  border-radius: var(--r);
-  background: var(--surface);
+  padding: 0.8em 0.95em;
+  border: 1px solid var(--m3-outline);
+  border-radius: var(--shape-xs);
+  background: transparent;
+  color: var(--m3-on-surface);
   outline: none;
   transition:
     border-color var(--t2) var(--ease),
@@ -1244,8 +1295,8 @@
 .fld input:focus,
 .fld textarea:focus,
 .fld select:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-a08);
+  border-color: var(--m3-primary);
+  box-shadow: inset 0 0 0 1px var(--m3-primary);
 }
 .fld input::placeholder,
 .fld textarea::placeholder {
@@ -1253,11 +1304,15 @@
 }
 .fld.has-error input,
 .fld.has-error textarea {
-  border-color: var(--brand);
+  border-color: var(--m3-error);
+}
+.fld.has-error input:focus,
+.fld.has-error textarea:focus {
+  box-shadow: inset 0 0 0 1px var(--m3-error);
 }
 .fld__err {
   font-size: var(--fs-xs);
-  color: var(--brand-text);
+  color: var(--m3-error);
 }
 .fld__pair {
   display: grid;
@@ -1274,7 +1329,7 @@
   padding-right: 2.2rem;
   cursor: pointer;
 }
-.fld__select svg {
+.fld__select .mi {
   position: absolute;
   right: 0.8rem;
   color: var(--ink-4);

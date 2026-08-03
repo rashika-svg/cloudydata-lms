@@ -133,7 +133,7 @@
   align-items: center;
   gap: 7px;
 }
-.hero__proof svg {
+.hero__proof .mi {
   color: var(--ok);
 }
 
@@ -533,7 +533,9 @@
 .finder__opt strong {
   font-size: var(--fs-sm);
 }
-.finder__opt span span {
+/* The hint under the label — not the icon, which keeps the tile's own
+   colour so it can travel to brand on hover. */
+.finder__opt span span:not(.mi) {
   font-size: var(--fs-xs);
   color: var(--ink-3);
 }
@@ -614,7 +616,7 @@
   gap: var(--s2);
   color: var(--ink-2);
 }
-.finder__why svg {
+.finder__why .mi {
   flex: none;
   margin-top: 3px;
   color: var(--ok);
@@ -675,7 +677,7 @@
   color: var(--ink-3);
   white-space: nowrap;
 }
-.finder__alt svg {
+.finder__alt .mi {
   color: var(--ink-4);
 }
 
@@ -1122,7 +1124,7 @@
 .toolbar__sort select:focus {
   border-color: var(--brand);
 }
-.toolbar__sort svg {
+.toolbar__sort .mi {
   position: absolute;
   right: var(--s4);
   color: var(--ink-4);
@@ -1135,41 +1137,59 @@
   gap: var(--s2);
   margin-bottom: var(--s4);
 }
+/* M3 filter chip: 8px radius, outlined when unselected, filled with
+   secondary-container when selected. State layer on top of both. */
 .chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 0.45em 0.9em;
-  border: 1px solid var(--line-2);
-  border-radius: var(--r-pill);
-  background: var(--surface);
-  color: var(--ink-2);
+  border: 1px solid var(--m3-outline);
+  border-radius: var(--shape-sm);
+  background: transparent;
+  color: var(--m3-on-surface-variant);
   font-size: var(--fs-sm);
   font-weight: 600;
+  overflow: hidden;
+  isolation: isolate;
   transition:
     background var(--t2) var(--ease),
     border-color var(--t2) var(--ease),
     color var(--t2) var(--ease);
 }
-.chip:hover {
-  border-color: var(--line-3);
+.chip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--t2) var(--ease);
+  pointer-events: none;
+}
+.chip:hover::after {
+  opacity: var(--m3-hover);
+}
+.chip:active::after {
+  opacity: var(--m3-press);
+}
+.chip > * {
+  position: relative;
+  z-index: 1;
 }
 .chip span {
   font-family: var(--mono);
   font-size: var(--fs-micro);
-  color: var(--ink-4);
+  opacity: 0.7;
 }
 .chip.is-on {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--surface);
-}
-.chip.is-on span {
-  color: rgba(255, 255, 255, 0.7);
+  border-color: transparent;
+  background: var(--m3-secondary-container);
+  color: var(--m3-on-secondary-container);
 }
 .chip--clear {
   border-style: dashed;
-  color: var(--brand-text);
+  color: var(--m3-primary);
 }
 
 .results {
@@ -1330,7 +1350,7 @@
   font-size: var(--fs-sm);
   color: var(--ink-2);
 }
-.learnlist svg {
+.learnlist .mi {
   flex: none;
   margin-top: 3px;
   color: var(--ok);
@@ -1544,7 +1564,7 @@
   align-items: center;
   gap: var(--s3);
 }
-.dbuy__facts svg {
+.dbuy__facts .mi {
   flex: none;
   color: var(--ink-4);
 }
@@ -2028,8 +2048,11 @@
   transform: scale(1.07);
   background: var(--brand-hi);
 }
-.stage__play svg {
-  margin-left: 4px;
+.stage__play .mi {
+  /* A triangle in a circle reads as off-centre when it is measured
+     centre — nudge it toward the point. Material's glyph already sits
+     closer to centre than the old path, so the nudge is smaller. */
+  margin-left: 2px;
 }
 .stage__placeholder {
   position: absolute;
