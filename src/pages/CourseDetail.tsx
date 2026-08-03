@@ -335,7 +335,13 @@ export default function CourseDetail() {
           <section className={PANEL}>
             <h2 className="mb-4 text-h3">Your instructor</h2>
             <div className="flex gap-4">
-              <Avatar initials={FOUNDER.initials} size={64} />
+              <Avatar
+                initials={FOUNDER.initials}
+                src={FOUNDER.photo}
+                zoom={FOUNDER.photoZoom}
+                focus={FOUNDER.photoFocus}
+                size={64}
+              />
               <div className="flex flex-col gap-0.5">
                 <strong className="text-[1.05rem]">{FOUNDER.name}</strong>
                 <span className="text-sm text-primary">{FOUNDER.role}</span>

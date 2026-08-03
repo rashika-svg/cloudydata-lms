@@ -8,6 +8,8 @@
    labelled as illustrative wherever it renders.
    ============================================================ */
 
+import founderPhoto from '../assets/founder-ajay-yadav.jpg'
+
 /* ---- Contact --------------------------------------------
    WhatsApp is the primary channel on the real site, so it is the
    primary call to action here too. */
@@ -56,11 +58,26 @@ export const HERO = {
   sub: 'Learn by doing, in live sessions with me — not a recorded playlist. Guided assignments after every concept, real projects in your portfolio, and daily one-on-one doubt clearing until it makes sense.',
 }
 
+/* PLACEHOLDER — this is the 150x150 derivative Instagram's CDN serves
+   for @cloudydata.ajay, which is all that URL will hand over; every
+   larger variant 403s, because the signature is bound to that one
+   transform.
+
+   It is a wide desk shot rather than a portrait, so it needs zooming to
+   put the face in the circle, and 150px does not have the pixels to be
+   zoomed. Replace with the original from Ajay — 600px or better, framed
+   head and shoulders — and then drop the photoZoom/photoFocus arguments
+   at the three call sites, since a centred headshot needs neither. */
+
 export const FOUNDER = {
   name: 'Ajay Yadav',
   role: 'Founder & CEO · Manager, Analytics & Data Science',
   experience: '7+ years',
   initials: 'AY',
+  photo: founderPhoto,
+  /** Scale about the face, since the subject sits low and small in frame. */
+  photoZoom: 1.55,
+  photoFocus: '50% 30%',
   mission:
     'Everyone should have the opportunity to learn and excel in the fields of Data Science and Data Analytics.',
   bio: 'I have spent over seven years solving complex business problems with data analytics, and I now lead analytics and data science as a manager. I started CloudyData because good live training was priced like a luxury — and price should never be the reason someone does not start.',

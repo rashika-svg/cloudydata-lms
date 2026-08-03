@@ -427,7 +427,13 @@ export default function Home() {
       <Section>
         <Wrap className="grid items-center gap-12 min-[880px]:grid-cols-[300px_minmax(0,1fr)]">
           <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset px-6 py-8 text-center shadow-e1">
-            <Avatar initials={FOUNDER.initials} size={72} />
+            <Avatar
+              initials={FOUNDER.initials}
+              src={FOUNDER.photo}
+              zoom={FOUNDER.photoZoom}
+              focus={FOUNDER.photoFocus}
+              size={72}
+            />
             <strong className="mt-3 text-[1.15rem]">{FOUNDER.name}</strong>
             <span className="text-xs text-on-surface-variant">{FOUNDER.role}</span>
           </div>

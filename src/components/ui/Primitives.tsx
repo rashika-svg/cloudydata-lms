@@ -238,14 +238,47 @@ export function Stat({ value, suffix = '', label }: { value: number; suffix?: st
 
 /* ---- Avatar ---------------------------------------------- */
 
-export function Avatar({ initials, size = 40 }: { initials: string; size?: number }) {
+export function Avatar({
+  initials,
+  src,
+  size = 40,
+  /* A square photo in a square frame means object-position does nothing —
+     there is no overflow to pan. Framing a subject who is not centred
+     therefore has to be a scale about a point, which is what these two
+     express. Both default to no-ops, so a properly framed headshot needs
+     neither and every existing call site is unaffected. */
+  zoom = 1,
+  focus = '50% 50%',
+}: {
+  initials: string
+  src?: string
+  size?: number
+  zoom?: number
+  focus?: string
+}) {
+  /* Same contract as Cover: the photo sits on top of what was already
+     there, and a 404 or a dead network falls back to it rather than
+     leaving a hole. */
+  const [failed, setFailed] = useState(false)
+
   return (
     <span
-      className="grid shrink-0 place-items-center rounded-full bg-primary-container font-semibold tracking-wide text-on-primary-container"
+      className="relative grid shrink-0 place-items-center overflow-hidden rounded-full bg-primary-container font-semibold tracking-wide text-on-primary-container"
       style={{ width: size, height: size, fontSize: size * 0.36 }}
       aria-hidden="true"
     >
       {initials}
+      {src && !failed && (
+        <img
+          className="absolute inset-0 size-full object-cover"
+          style={zoom === 1 ? undefined : { transform: `scale(${zoom})`, transformOrigin: focus }}
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+        />
+      )}
     </span>
   )
 }
