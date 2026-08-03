@@ -81,7 +81,7 @@ export function SectionHead({
             {eyebrow}
           </span>
         )}
-        <h2 className="max-w-[24ch] text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">{title}</h2>
+        <h2 className="max-w-[24ch] text-h2">{title}</h2>
         {sub && <p className="mt-3 max-w-[62ch] text-on-surface-variant">{sub}</p>}
       </div>
       {action && <div>{action}</div>}
@@ -225,7 +225,7 @@ export function Stat({ value, suffix = '', label }: { value: number; suffix?: st
   return (
     <div className="flex min-w-0 flex-col gap-1 text-center">
       <span
-        className="bg-[image:var(--grad-brand)] bg-clip-text text-[clamp(1.8rem,1.3rem+1.7vw,2.6rem)] leading-none font-bold tracking-[-0.026em] text-transparent tabular-nums"
+        className="bg-[image:var(--grad-brand)] bg-clip-text text-stat leading-none font-bold tracking-[-0.026em] text-transparent tabular-nums"
         ref={ref}
       >
         {shown.toLocaleString('en-IN')}
@@ -341,7 +341,7 @@ export function Empty({
       <span className="grid size-13 place-items-center rounded-full bg-surface-high text-on-surface-variant">
         <Icon name={icon} size={22} />
       </span>
-      <h3 className="text-[1.1875rem]">{title}</h3>
+      <h3 className="text-h3">{title}</h3>
       {body && <p className="max-w-[52ch] text-sm text-on-surface-variant">{body}</p>}
       {children}
     </div>

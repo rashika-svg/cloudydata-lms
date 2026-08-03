@@ -51,10 +51,18 @@
   --m3-surface-container-high: #e3e9eb;
   --m3-surface-container-highest: #dee3e5;
 
-  --m3-on-surface: #171d1e;
-  --m3-on-surface-variant: #3f484a;
-  --m3-outline: #6f797a;
-  --m3-outline-variant: #bfc8ca;
+  /* Grey, not black. #171d1e read as ink on paper — correct for a
+     document, too hard for a page whose job is to be skimmed. These
+     still clear 11:1 and 6.4:1 on the lightest surface, so nothing
+     is lost but the harshness. */
+  --m3-on-surface: #333b3d;
+  --m3-on-surface-variant: #5c6568;
+  /* Not lightened with the other two. This one carries small labels
+     — the rating count, the fact strip, the fine print — and has to
+     clear 4.5:1 against the TINTED surfaces those sit on, not just
+     against white. */
+  --m3-outline: #687274;
+  --m3-outline-variant: #c7cfd0;
 
   --m3-inverse-surface: #2b3133;
   --m3-inverse-on-surface: #ecf2f3;
@@ -142,6 +150,11 @@
   --r: var(--shape-md);
   --r-pill: var(--shape-full);
 
+  /* The hairline that sells the frosted card as glass: light
+     catching a bevel. Barely there in dark mode, where a bright
+     edge on a near-black surface reads as a mistake. */
+  --glass-edge: rgb(255 255 255 / 0.55);
+
   --grad-brand: linear-gradient(120deg, var(--m3-primary) 0%, #0891b2 45%, var(--m3-tertiary) 100%);
   --glow: 0 0 0 1px color-mix(in srgb, var(--m3-primary) 22%, transparent),
     0 12px 32px -12px color-mix(in srgb, var(--m3-primary) 45%, transparent);
@@ -151,14 +164,10 @@
   --font: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
 
-  --fs-hero: clamp(2.4rem, 1.4rem + 3.6vw, 4.1rem);
-  --fs-h1: clamp(1.9rem, 1.4rem + 1.9vw, 2.9rem);
-  --fs-h2: clamp(1.45rem, 1.2rem + 1.1vw, 2rem);
-  --fs-h3: 1.1875rem;
-  --fs-body: 1rem;
-  --fs-sm: 0.9062rem;
-  --fs-xs: 0.8125rem;
-  --fs-micro: 0.6875rem;
+  /* Body only. The display sizes live in Tailwind's @theme as a
+     `text-display / text-h1 / text-h2 / text-h3` scale, because the
+     markup is what sets them now. */
+  --fs-body: 0.9375rem;
 
   --track-h: -0.018em;
   --track-display: -0.026em;
@@ -234,10 +243,13 @@
   --m3-surface-container-high: #252b2c;
   --m3-surface-container-highest: #303637;
 
-  --m3-on-surface: #dee3e5;
-  --m3-on-surface-variant: #bfc8ca;
-  --m3-outline: #899294;
-  --m3-outline-variant: #3f484a;
+  /* Pulled back from white for the same reason the light scheme is
+     pulled back from black — full-contrast text on a near-black
+     ground glares. */
+  --m3-on-surface: #c9d0d2;
+  --m3-on-surface-variant: #a7b1b3;
+  --m3-outline: #7f8a8b;
+  --m3-outline-variant: #3a4345;
 
   --m3-inverse-surface: #dee3e5;
   --m3-inverse-on-surface: #2b3133;
@@ -247,6 +259,7 @@
   --on-dark: #dee3e5;
 
   --brand-hi: color-mix(in srgb, var(--m3-primary) 85%, #fff);
+  --glass-edge: rgb(255 255 255 / 0.07);
 
   --ok: #a1d399;
   --ok-bg: #24500f;

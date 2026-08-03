@@ -77,8 +77,8 @@ export function PageHead({
         <h1
           className={
             large
-              ? 'mt-3 max-w-[22ch] text-[clamp(1.9rem,1.3rem+2.6vw,3.1rem)]'
-              : 'max-w-[20ch] text-[clamp(1.9rem,1.4rem+1.9vw,2.9rem)]'
+              ? 'mt-3 max-w-[22ch] text-h1-lg'
+              : 'max-w-[20ch] text-h1'
           }
         >
           {title}
@@ -109,7 +109,7 @@ export function CtaBand({
   return (
     <section className="bg-dark py-[clamp(3rem,7vw,6.5rem)] text-center text-on-dark">
       <Wrap>
-        <h2 className="mx-auto max-w-[20ch] text-[clamp(1.8rem,1.3rem+2.2vw,2.7rem)]">{title}</h2>
+        <h2 className="mx-auto max-w-[20ch] text-h1">{title}</h2>
         {children && <p className="mx-auto mt-4 max-w-[58ch] text-on-dark/70">{children}</p>}
         <div className="mt-8 flex flex-wrap justify-center gap-4">{actions}</div>
       </Wrap>

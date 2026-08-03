@@ -49,11 +49,18 @@ const PROJECTS = COURSES.flatMap((c) => {
    the eye; a masked slide keeps the baseline dead still — which
    matters when the type is this large.
 
-   The mask is deliberately taller than the 1.02em line box: descenders
-   ('y' in Analyst) sit below it and a flush window shears them off. So
-   the window overhangs 0.2em, a negative margin gives that overhang
-   back to the line so nothing moves, and the track gains a 0.3em gap
-   so the next role stays out of the exposed strip.
+   Descenders ('g' in Engineer, 'y' in Analyst) drop below the 1.02em
+   line box, and two separate things used to eat them. The mask window
+   sheared them off, so it now overhangs 0.2em with a negative margin
+   handing that overhang back to the line — nothing moves. And the
+   gradient is painted through bg-clip-text, which only paints inside
+   the element's own box, so a 1.02em-tall role left its tail unpainted
+   even once the mask was open. Hence roles at 1.32em: taller than the
+   line box they render, so the gradient reaches the tail.
+
+   Those two numbers are load-bearing together. 1.32em is also the
+   slide step, which keeps the next role's ascenders below the 1.22em
+   window; widen the window or shrink a role and the neighbour peeks in.
    ---------------------------------------------------------- */
 
 const ROLES = ['Data Scientist', 'Data Analyst', 'Data Engineer', 'BI Analyst']
@@ -78,7 +85,7 @@ function RotatingWord() {
         Data Scientist
       </span>
       <span
-        className="absolute inset-0 flex flex-col gap-[0.3em] transition-transform duration-600 ease-spring"
+        className="absolute inset-0 flex flex-col transition-transform duration-600 ease-spring"
         style={
           {
             '--rot-i': index,
@@ -89,7 +96,7 @@ function RotatingWord() {
       >
         {ROLES.map((role) => (
           <span
-            className="block h-[1.02em] flex-none bg-[image:var(--grad-brand)] bg-clip-text leading-[1.02] whitespace-nowrap text-transparent"
+            className="block h-[1.32em] flex-none bg-[image:var(--grad-brand)] bg-clip-text leading-[1.02] whitespace-nowrap text-transparent"
             key={role}
           >
             {role}
@@ -224,13 +231,13 @@ export default function Home() {
           <div className="flex flex-col items-start gap-6">
             <span className={EYEBROW}>{HERO.eyebrow}</span>
 
-            <h1 className="text-[clamp(2.75rem,1.6rem+5.2vw,5.5rem)] leading-[1.02] font-bold tracking-[-0.035em]">
+            <h1 className="text-display leading-[1.02] font-bold tracking-[-0.035em]">
               Become a <RotatingWord />
               <br />
               <span className="text-on-surface-variant">without going broke.</span>
             </h1>
 
-            <p className="max-w-[58ch] text-[clamp(1rem,0.95rem+0.35vw,1.14rem)] text-on-surface-variant">
+            <p className="max-w-[58ch] text-lede text-on-surface-variant">
               {HERO.sub}
             </p>
 
@@ -361,7 +368,7 @@ export default function Home() {
           <Grid>
             {PILLARS.map((p, i) => (
               <article
-                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
+                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
                 key={p.title}
                 style={{ '--i': i } as React.CSSProperties}
               >
@@ -391,7 +398,7 @@ export default function Home() {
             {PROJECTS.map((p, i) => (
               <Link
                 to={`/courses/${p.slug}`}
-                className="group rise flex items-center gap-4 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-4 transition-[border-color,box-shadow] duration-500 ease-decelerate hover:border-primary/16 hover:shadow-e1"
+                className="group rise flex items-center gap-4 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset px-6 py-4 transition-[border-color,box-shadow] duration-500 ease-decelerate hover:border-primary/16 hover:shadow-e1"
                 key={`${p.slug}-${p.title}`}
                 style={{ '--i': Math.min(i, 6) } as React.CSSProperties}
               >
@@ -414,7 +421,7 @@ export default function Home() {
       {/* ---- Stats ------------------------------------ */}
       <Section tight>
         <Wrap>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-8 shadow-e1">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-6 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-8 shadow-e1">
             {DEMO_STATS.map((s) => (
               <Stat key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
             ))}
@@ -428,7 +435,7 @@ export default function Home() {
       {/* ---- About me --------------------------------- */}
       <Section>
         <Wrap className="grid items-center gap-12 min-[880px]:grid-cols-[300px_minmax(0,1fr)]">
-          <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-8 text-center shadow-e1">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset px-6 py-8 text-center shadow-e1">
             <Avatar initials={FOUNDER.initials} size={72} />
             <strong className="mt-3 text-[1.15rem]">{FOUNDER.name}</strong>
             <span className="text-xs text-on-surface-variant">{FOUNDER.role}</span>
@@ -437,7 +444,7 @@ export default function Home() {
             <span className="font-mono text-[0.6875rem] font-medium tracking-[0.09em] text-outline uppercase">
               About me
             </span>
-            <h2 className="text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">Why I started CloudyData</h2>
+            <h2 className="text-h2">Why I started CloudyData</h2>
             <blockquote className="border-l-[3px] border-primary pl-4 text-[1.2rem] leading-snug font-semibold">
               “{FOUNDER.mission}”
             </blockquote>
@@ -460,7 +467,7 @@ export default function Home() {
           <Grid min={320}>
             {DEMO_TESTIMONIALS.map((t, i) => (
               <figure
-                className="rise m-0 flex flex-col gap-4 rounded-lg border border-outline-variant bg-surface-lowest p-6"
+                className="rise m-0 flex flex-col gap-4 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6"
                 key={t.name}
                 style={{ '--i': i } as React.CSSProperties}
               >

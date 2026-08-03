@@ -97,7 +97,7 @@ export default function MyLearning() {
 
       {resume && (
         <Wrap>
-          <div className="rise mt-8 grid items-center gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-e2 min-[720px]:grid-cols-[200px_minmax(0,1fr)_auto]">
+          <div className="rise mt-8 grid items-center gap-6 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-4 shadow-e2 min-[720px]:grid-cols-[200px_minmax(0,1fr)_auto]">
             <div className="overflow-hidden rounded-md">
               <Cover slug={resume.course.slug} accent={resume.course.accent} />
             </div>
@@ -125,7 +125,7 @@ export default function MyLearning() {
 
       <Section top>
         <Wrap>
-          <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 rounded-lg border border-outline-variant bg-surface-lowest p-6">
+          <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6">
             {[
               { value: `${Math.round(overall * 100)}%`, label: 'Overall progress' },
               { value: totals.done, label: 'Lessons completed' },

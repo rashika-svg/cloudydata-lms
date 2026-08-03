@@ -100,7 +100,7 @@ export default function Contact() {
                 className={`group rise flex items-center gap-4 rounded-lg border p-4 transition-[border-color,box-shadow] duration-500 ease-decelerate hover:shadow-e1 ${
                   c.primary
                     ? 'border-wa/45 bg-wa/8'
-                    : 'border-outline-variant bg-surface-lowest hover:border-outline'
+                    : 'border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset hover:border-outline'
                 }`}
                 style={{ '--i': i } as React.CSSProperties}
                 href={c.href}
@@ -146,7 +146,7 @@ export default function Contact() {
           <Panel>
             <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
               <div>
-                <h2 className="text-[1.1875rem]">Or send a message</h2>
+                <h2 className="text-h3">Or send a message</h2>
                 <p className="mt-1 text-sm text-on-surface-variant">
                   WhatsApp is faster, but if you prefer to write it out, this reaches the same inbox.
                 </p>

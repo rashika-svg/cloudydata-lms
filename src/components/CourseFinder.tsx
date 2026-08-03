@@ -178,12 +178,12 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
   const current = QUESTIONS[step]
 
   return (
-    <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest shadow-e2" id="finder">
+    <div className="overflow-hidden rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset shadow-e2" id="finder">
       <div className="border-b border-outline-variant px-8 pt-8 pb-6 text-center">
         <span className="mb-2 block font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
           Not sure which track?
         </span>
-        <h2 className="text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">Answer three questions.</h2>
+        <h2 className="text-h2">Answer three questions.</h2>
         <p className="mx-auto mt-3 max-w-[60ch] text-sm text-on-surface-variant">
           You will get one honest recommendation — and you can take the answers straight to WhatsApp instead of starting
           the conversation from scratch.
@@ -223,7 +223,7 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
         {!done && current && (
           /* Keyed so each question animates in rather than snapping. */
           <div className="rise text-center" key={current.key}>
-            <h3 className="text-[1.1875rem]">{current.title}</h3>
+            <h3 className="text-h3">{current.title}</h3>
             <p className="mx-auto mt-2 mb-6 max-w-[56ch] text-sm text-on-surface-variant">{current.sub}</p>
 
             <div className="mx-auto grid max-w-195 grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-3">
@@ -269,7 +269,7 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
                 <Cover slug={top.course.slug} accent={top.course.accent} />
               </span>
               <span className="flex min-w-0 flex-col gap-2">
-                <strong className="text-[1.1875rem]">{top.course.title}</strong>
+                <strong className="text-h3">{top.course.title}</strong>
                 <span className="text-xs text-on-surface-variant">
                   {top.course.durationLabel} · {top.course.level} · {formatINR(top.course.priceINR)}
                 </span>
@@ -303,7 +303,7 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
                     <Link
                       key={course.slug}
                       to={`/courses/${course.slug}`}
-                      className="flex items-center gap-3 rounded-md border border-outline-variant bg-surface-lowest px-4 py-3 transition-[border-color,transform] duration-200 hover:translate-x-0.5 hover:border-outline"
+                      className="flex items-center gap-3 rounded-md border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset px-4 py-3 transition-[border-color,transform] duration-200 hover:translate-x-0.5 hover:border-outline"
                     >
                       <strong className="min-w-0 flex-1 text-sm">{course.title}</strong>
                       <span className="text-xs whitespace-nowrap text-on-surface-variant">
