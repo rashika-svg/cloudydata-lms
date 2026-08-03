@@ -3,11 +3,12 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider, createHashRouter } from 'react-router-dom'
 
 /* Tokens first — Tailwind's @theme reads these variables, so they
-   have to be defined before it binds its colour and shape scales. */
+   have to be defined before it binds its colour and shape scales.
+   tailwind.css pulls in the reset and the cover art itself, because
+   both have to be imported INTO a cascade layer to sit under the
+   utilities rather than over them. */
 import './styles/tokens.css'
 import './styles/tailwind.css'
-import './styles/base.css'
-import './styles/cover.css'
 
 import { AppProvider } from './store/app'
 import { SiteLayout } from './components/site/SiteLayout'
