@@ -19,9 +19,10 @@ import { useApp } from '../store/app'
 import { useReducedMotion, useTilt } from '../hooks/motion'
 import { CourseCard } from '../components/CourseCard'
 import { CourseFinder } from '../components/CourseFinder'
+import { PillarCard } from '../components/PillarCard'
 import { AccordionItem } from '../components/ui/Accordion'
 import { Button } from '../components/ui/Button'
-import { Icon, type IconName } from '../components/ui/Icon'
+import { Icon } from '../components/ui/Icon'
 import { CtaBand, Grid, Section, Wrap } from '../components/ui/Layout'
 import { Avatar, Ring, SectionHead, Stat, Stars } from '../components/ui/Primitives'
 import { Wa } from '../components/ui/Wa'
@@ -365,29 +366,9 @@ export default function Home() {
             sub="Concepts land through guided assignments and real projects, in live sessions where you can interrupt and ask."
           />
 
-          {/* Hover: a lift, an accent outline and a spring on the icon chip.
-              Durations come from --t*, not the fixed duration-* utilities,
-              so the whole thing collapses under reduced motion the same way
-              the entrance animations do.
-
-              No pointer-tracked glow and no tilt here on purpose — both were
-              tried on the cards and removed, for reasons the component layer
-              still records. */}
           <Grid>
             {PILLARS.map((p, i) => (
-              <article
-                className="group rise flex flex-col gap-3 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6 shadow-e1 transition-[transform,border-color,box-shadow] duration-[var(--t4)] ease-decelerate hover:-translate-y-1 hover:border-primary/25 hover:shadow-e3"
-                key={p.title}
-                style={{ '--i': i } as React.CSSProperties}
-              >
-                <span className="grid size-11 place-items-center rounded-md border border-outline-variant bg-surface-container text-on-surface-variant transition-[transform,background-color,border-color,color] duration-[var(--t3)] ease-spring group-hover:-rotate-6 group-hover:scale-110 group-hover:border-primary/40 group-hover:bg-primary/12 group-hover:text-primary">
-                  <Icon name={p.icon as IconName} size={19} />
-                </span>
-                <h3 className="text-[1.08rem] transition-colors duration-[var(--t3)] ease-decelerate group-hover:text-primary">
-                  {p.title}
-                </h3>
-                <p className="text-sm text-on-surface-variant">{p.body}</p>
-              </article>
+              <PillarCard key={p.title} pillar={p} index={i} />
             ))}
           </Grid>
         </Wrap>

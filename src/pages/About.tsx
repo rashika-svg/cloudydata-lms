@@ -7,6 +7,7 @@
 
 import { COURSES, formatINR } from '../data/courses'
 import { CONTACT, DEMO_STATS, FOUNDER, PILLARS, WA_GENERAL, whatsappLink } from '../data/site'
+import { PillarCard } from '../components/PillarCard'
 import { Button } from '../components/ui/Button'
 import { Icon, type IconName } from '../components/ui/Icon'
 import { CtaBand, Grid, Section, Wrap } from '../components/ui/Layout'
@@ -129,17 +130,7 @@ export default function About() {
           <SectionHead eyebrow="What I hold to" title="Six principles, no exceptions" />
           <Grid>
             {PILLARS.map((p, i) => (
-              <article
-                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
-                key={p.title}
-                style={{ '--i': i } as React.CSSProperties}
-              >
-                <span className="grid size-11 place-items-center rounded-md border border-outline-variant bg-surface-container text-on-surface-variant">
-                  <Icon name={p.icon as IconName} size={19} />
-                </span>
-                <h3 className="text-[1.08rem]">{p.title}</h3>
-                <p className="text-sm text-on-surface-variant">{p.body}</p>
-              </article>
+              <PillarCard key={p.title} pillar={p} index={i} />
             ))}
           </Grid>
         </Wrap>
