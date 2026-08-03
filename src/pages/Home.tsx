@@ -495,7 +495,7 @@ export default function Home() {
       {/* ---- FAQ -------------------------------------- */}
       <Section>
         <Wrap narrow>
-          <SectionHead eyebrow="Questions" title="Before you enrol" />
+          <SectionHead eyebrow="Questions" title="Before you enroll" />
           <div className="flex flex-col">
             {FAQS.map((f, i) => (
               <AccordionItem key={f.q} title={f.q} defaultOpen={i === 0}>

@@ -35,7 +35,7 @@ onto GitHub Pages, Netlify, S3 or a sub-directory with no server rewrites.
 | --- | --- |
 | `/` | Hero with the instructor card, tool ticker, featured courses, the "learn by doing" pillars, stats, About-me block, testimonials, FAQ, WhatsApp CTA |
 | `/courses` | Catalogue with search, category filter and sort — **all held in the URL**, so any filtered view is linkable |
-| `/courses/:slug` | Dark hero, what-you-will-learn, tools, full curriculum accordion, instructor bio, sticky enrolment card |
+| `/courses/:slug` | Dark hero, what-you-will-learn, tools, full curriculum accordion, instructor bio, sticky enrollment card |
 | `/my-learning` | Resume banner pointing at the exact lesson you left on, progress summary, your course cards |
 | `/learn/:slug` | Lesson player — curriculum outline, video stage, notes, keyboard navigation |
 | `/about` | About Me, first person, with the mission quote and social links |
@@ -66,7 +66,7 @@ the sticky header.
 
 Deliberately *not* transform-based momentum scrolling (the Lenis-style lerp): it
 requires translating a wrapper, which disables `position: sticky` — and the
-header, enrolment card, contact channels and player outline all depend on it.
+header, enrollment card, contact channels and player outline all depend on it.
 
 **Scroll-driven reveals use native CSS** (`animation-timeline: view()`), gated
 behind `@supports` and `prefers-reduced-motion: no-preference`. If the feature is
@@ -85,7 +85,7 @@ language is reviewable in one place:
   well as offering an exit; leaves the tab order while invisible
 - **WhatsApp glyph tilts** like a handset being picked up — only on the one
   action the whole site points at
-- **Enrol confirmation** flashes in place before the card swaps state, so the
+- **Enroll confirmation** flashes in place before the card swaps state, so the
   click is acknowledged where you clicked it
 - **Copy the number**: glyph and label swap to a tick, then revert on their own
 - **Logo bars stagger**, **lesson rows nudge** toward their link, **play control
@@ -120,7 +120,7 @@ src/
   data/         courses.ts (catalogue + curricula), site.ts (contact, copy)
   hooks/        motion.ts (inView, countUp, scroll progress, copy, measured height)
                 util.ts   (persistent state, hotkeys, media query, scroll lock)
-  store/        app.tsx — enrolments, progress, theme, toasts
+  store/        app.tsx — enrollments, progress, theme, toasts
   components/
     site/       Header, Footer, SiteLayout, BackToTop
     ui/         Button, Icon, Primitives, Accordion, Toaster
@@ -130,7 +130,7 @@ src/
   styles/       tokens.css → base.css → components.css → pages.css → micro.css
 ```
 
-No backend. `localStorage` holds enrolments, completed lessons, the resume point
+No backend. `localStorage` holds enrollments, completed lessons, the resume point
 and theme, synced across tabs. Course covers are generated — each slug hashes
 into one of six geometric layouts in the course's accent colour, so there are
 zero image assets.
@@ -165,5 +165,5 @@ contact numbers and social links all mirror cloudydata.in.
    `src/data/site.ts` and are labelled as illustrative in the UI.
 
 Lesson-level syllabi are derived from the tools each track advertises, since the
-public site lists modules but not lessons. Enrolment, payment and class delivery
+public site lists modules but not lessons. Enrollment, payment and class delivery
 are not implemented — this is a front-end demo, not an affiliated product.

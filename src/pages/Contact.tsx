@@ -46,7 +46,7 @@ const CHANNELS: { icon: IconName; label: string; value: string; href: string; no
     label: 'WhatsApp',
     value: CONTACT.phoneDisplay,
     href: whatsappLink(WA_GENERAL),
-    note: 'Fastest — this is where enrolments actually happen',
+    note: 'Fastest — this is where enrollments actually happen',
     primary: true,
   },
   { icon: 'whatsapp', label: 'WhatsApp (alternate)', value: CONTACT.phoneAltDisplay, href: whatsappLink(WA_GENERAL, true) },
@@ -86,7 +86,7 @@ export default function Contact() {
 
   return (
     <>
-      <PageHead title="Talk to me before you enrol">
+      <PageHead title="Talk to me before you enroll">
         Tell me your background and what you want to be doing in a year. You get a straight recommendation —{' '}
         {CONTACT.replyTime.toLowerCase()}.
       </PageHead>

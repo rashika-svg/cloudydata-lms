@@ -23,7 +23,7 @@ export default function Learn() {
   const course = getCourse(slug)
   const [params, setParams] = useSearchParams()
 
-  const { isEnrolled, enrol, isLessonDone, setLessonDone, toggleLesson, progressFor, noteLastLesson, pushToast } =
+  const { isEnrolled, enroll, isLessonDone, setLessonDone, toggleLesson, progressFor, noteLastLesson, pushToast } =
     useApp()
 
   const isWide = useMediaQuery('(min-width: 1100px)')
@@ -52,8 +52,8 @@ export default function Learn() {
 
   // Landing on a player URL directly counts as joining.
   useEffect(() => {
-    if (course && !isEnrolled(course.slug)) enrol(course.slug)
-  }, [course, isEnrolled, enrol])
+    if (course && !isEnrolled(course.slug)) enroll(course.slug)
+  }, [course, isEnrolled, enroll])
 
   useEffect(() => {
     if (course && active) noteLastLesson(course.slug, active.id)

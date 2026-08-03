@@ -3,7 +3,7 @@
 
    Contact details, social links, navigation labels, the founder's
    bio and the "Learn By Doing" philosophy are taken from
-   cloudydata.in. The site publishes no enrolment figures, ratings or
+   cloudydata.in. The site publishes no enrollment figures, ratings or
    testimonials — anything of that kind here is marked DEMO_ and is
    labelled as illustrative wherever it renders.
    ============================================================ */
@@ -185,7 +185,7 @@ export const FAQS = [
     a: 'Because affordability is the point. I run this lean and teach the classes myself, so the price stays at the lowest level live training can sustainably run at.',
   },
   {
-    q: 'How do I enrol, and how do I pay?',
+    q: 'How do I enroll, and how do I pay?',
     a: 'Message me on WhatsApp and we will talk through which track fits, batch dates and fees. There is no automated checkout — I would rather have a five-minute conversation first.',
   },
   {

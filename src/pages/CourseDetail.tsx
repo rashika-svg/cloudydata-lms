@@ -1,9 +1,9 @@
 /* ============================================================
    Course detail.
 
-   Sticky enrolment card with both real calls to action: "Enroll NOW"
+   Sticky enrollment card with both real calls to action: "Enroll NOW"
    (demo state) and a genuine WhatsApp deep link with the course name
-   pre-filled — which is how enrolment actually works on the real site.
+   pre-filled — which is how enrollment actually works on the real site.
    ============================================================ */
 
 import { useEffect, useMemo, useState } from 'react'
@@ -28,9 +28,9 @@ const PANEL = 'rounded-lg bg-surface-low p-6'
 export default function CourseDetail() {
   const { slug } = useParams<{ slug: string }>()
   const course = getCourse(slug)
-  const { isEnrolled, enrol, leave, resetCourse, progressFor, isLessonDone, pushToast } = useApp()
+  const { isEnrolled, enroll, leave, resetCourse, progressFor, isLessonDone, pushToast } = useApp()
 
-  // Brief success state on the enrol button, so the click is
+  // Brief success state on the enroll button, so the click is
   // acknowledged in place before the card swaps to its enrolled form.
   const [justEnrolled, setJustEnrolled] = useState(false)
 
@@ -54,11 +54,11 @@ export default function CourseDetail() {
   const minutes = totalMinutes(course)
   const off = Math.round(((course.mrpINR - course.priceINR) / course.mrpINR) * 100)
 
-  const onEnrol = () => {
+  const onEnroll = () => {
     setJustEnrolled(true)
-    enrol(course.slug)
+    enroll(course.slug)
     pushToast('Added to My learning', {
-      detail: 'Demo enrolment — message on WhatsApp to join a real batch.',
+      detail: 'Demo enrollment — message on WhatsApp to join a real batch.',
       tone: 'success',
     })
   }
@@ -153,7 +153,7 @@ export default function CourseDetail() {
                     <s className="text-sm text-outline">{formatINR(course.mrpINR)}</s>
                     <em className="text-xs font-medium text-ok not-italic">{off}% off</em>
                   </div>
-                  <Button block size="lg" variant="brand" onClick={onEnrol}>
+                  <Button block size="lg" variant="brand" onClick={onEnroll}>
                     Enroll NOW
                   </Button>
                 </>
@@ -164,7 +164,7 @@ export default function CourseDetail() {
               </Wa>
 
               <p className="text-center text-[0.6875rem] leading-relaxed text-outline">
-                Real batches are confirmed over WhatsApp — {CONTACT.phoneDisplay}. The button above is a demo enrolment.
+                Real batches are confirmed over WhatsApp — {CONTACT.phoneDisplay}. The button above is a demo enrollment.
               </p>
 
               <ul className="mt-2 flex flex-col gap-3 border-t border-outline-variant pt-4 text-sm text-on-surface-variant">
@@ -378,7 +378,7 @@ export default function CourseDetail() {
             Continue
           </Button>
         ) : (
-          <Button variant="brand" onClick={onEnrol}>
+          <Button variant="brand" onClick={onEnroll}>
             Enroll
           </Button>
         )}

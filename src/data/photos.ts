@@ -103,7 +103,7 @@ export function photoSrc(id: number, w: number): string {
 
 /**
  * Widths chosen for where covers actually render: ~300px in the
- * catalogue grid, ~360px in the sticky enrolment card, and up to
+ * catalogue grid, ~360px in the sticky enrollment card, and up to
  * ~800px on wide screens — doubled for high-DPI displays.
  */
 export function photoSrcSet(id: number): string {

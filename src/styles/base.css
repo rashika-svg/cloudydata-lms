@@ -16,7 +16,7 @@ html {
   -webkit-text-size-adjust: 100%;
   /* Native smooth scrolling. A transform-based lerp would feel
      smoother still, but it requires translating a wrapper, which
-     disables position:sticky — and the header, enrolment card,
+     disables position:sticky — and the header, enrollment card,
      contact channels and player outline all depend on it. */
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + var(--s5));

@@ -86,7 +86,7 @@ export function CommandPalette() {
         label: 'Message Ajay on WhatsApp',
         group: 'Actions',
         icon: 'whatsapp',
-        keywords: 'enrol enroll ask help contact',
+        keywords: 'enroll enroll ask help contact',
         run: () => window.open(whatsappLink(WA_GENERAL), '_blank', 'noopener'),
       },
       {

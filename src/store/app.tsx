@@ -1,10 +1,10 @@
 /* ============================================================
    Application state.
 
-   No backend: enrolments, lesson progress, the resume point and the
+   No backend: enrollments, lesson progress, the resume point and the
    colour theme live in localStorage and sync across tabs.
 
-   Enrolment here is a demo action. On the real site you enrol by
+   Enrollment here is a demo action. On the real site you enroll by
    messaging Ajay on WhatsApp — the button that does that is a real
    deep link; this state only powers the student area.
    ============================================================ */
@@ -44,7 +44,7 @@ type Theme = 'light' | 'dark'
 interface AppValue {
   enrolled: string[]
   isEnrolled: (slug: string) => boolean
-  enrol: (slug: string) => void
+  enroll: (slug: string) => void
   leave: (slug: string) => void
 
   completed: Record<string, string[]>
@@ -128,11 +128,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  /* ---- Enrolment --------------------------------------- */
+  /* ---- Enrollment --------------------------------------- */
 
   const isEnrolled = useCallback((slug: string) => enrolled.includes(slug), [enrolled])
 
-  const enrol = useCallback(
+  const enroll = useCallback(
     (slug: string) => setEnrolled((prev) => (prev.includes(slug) ? prev : [...prev, slug])),
     [setEnrolled],
   )
@@ -208,14 +208,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AppValue>(
     () => ({
-      enrolled, isEnrolled, enrol, leave,
+      enrolled, isEnrolled, enroll, leave,
       completed, isLessonDone, toggleLesson, setLessonDone, resetCourse,
       progressFor, lastLessonFor, noteLastLesson,
       theme, toggleTheme,
       toasts, pushToast, dismissToast,
     }),
     [
-      enrolled, isEnrolled, enrol, leave,
+      enrolled, isEnrolled, enroll, leave,
       completed, isLessonDone, toggleLesson, setLessonDone, resetCourse,
       progressFor, lastLessonFor, noteLastLesson,
       theme, toggleTheme,

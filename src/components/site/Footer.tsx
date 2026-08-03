@@ -171,7 +171,7 @@ export function Footer() {
           <span className="mr-2 inline-block rounded-full bg-[#f0c04f]/15 px-2 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.09em] text-[#f0c04f] uppercase">
             Demo
           </span>
-          Front-end portfolio build. Course content mirrors {CONTACT.site}; enrolment, payment and class delivery are
+          Front-end portfolio build. Course content mirrors {CONTACT.site}; enrollment, payment and class delivery are
           not implemented. Photography from{' '}
           <a
             href="https://www.pexels.com"

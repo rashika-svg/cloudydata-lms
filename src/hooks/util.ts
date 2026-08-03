@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
    usePersistentState — useState that survives a reload.
 
    This is the whole "backend" of the app: a static site with no
-   server, so enrolments and lesson progress live in localStorage.
+   server, so enrollments and lesson progress live in localStorage.
    Reads are lazy and guarded, because a user in private mode or with
    storage disabled should get a working site, not a white screen.
    ---------------------------------------------------------- */
