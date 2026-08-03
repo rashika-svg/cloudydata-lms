@@ -108,7 +108,7 @@ export default function MyLearning() {
         <section className="wrap">
           <div className="resume rise">
             <div className="resume__cover">
-              <Cover slug={resume.course.slug} accent={resume.course.accent} label={resume.course.short} />
+              <Cover slug={resume.course.slug} accent={resume.course.accent} />
             </div>
             <div className="resume__body">
               <span className="resume__kicker">

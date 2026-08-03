@@ -235,7 +235,7 @@ export default function CourseDetail() {
         <aside className="dbuy">
           <div className="dbuy__card">
             <div className="dbuy__cover">
-              <Cover slug={course.slug} accent={course.accent} label={course.short} priority />
+              <Cover slug={course.slug} accent={course.accent} priority />
               {photo && (
                 <span className="dbuy__credit">
                   Photo: {photo.by} / Pexels

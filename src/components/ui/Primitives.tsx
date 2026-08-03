@@ -200,13 +200,11 @@ export function Avatar({ initials, size = 40 }: { initials: string; size?: numbe
 export function Cover({
   slug,
   accent,
-  label,
   /** Hint the browser to fetch this one early (hero / above the fold). */
   priority = false,
 }: {
   slug: string
   accent: Accent
-  label?: string
   priority?: boolean
 }) {
   const variant = hash(slug) % 6
@@ -240,8 +238,6 @@ export function Cover({
           onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
         />
       )}
-
-      {label && <span className="cover__label">{label}</span>}
     </div>
   )
 }

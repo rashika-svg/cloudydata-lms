@@ -8,7 +8,7 @@
 
 import { Link } from 'react-router-dom'
 import { formatINR, lessonCount, totalMinutes, type Course } from '../data/courses'
-import { FOUNDER, waCourse, whatsappLink } from '../data/site'
+import { waCourse, whatsappLink } from '../data/site'
 import { useApp } from '../store/app'
 import { useTilt } from '../hooks/motion'
 import { Icon } from './ui/Icon'
@@ -43,7 +43,8 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
       {/* Pointer-tracked sheen — position comes from useTilt's --px/--py. */}
       <span className="ccard__sheen" aria-hidden="true" />
       <Link to={`/courses/${course.slug}`} className="ccard__cover">
-        <Cover slug={course.slug} accent={course.accent} label={course.short} />
+        {/* No label pill — the full title sits directly below it. */}
+        <Cover slug={course.slug} accent={course.accent} />
         <span className="ccard__live">
           <i aria-hidden="true" /> Live
         </span>
@@ -65,8 +66,6 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
         <h3 className="ccard__title">
           <Link to={`/courses/${course.slug}`}>{course.title}</Link>
         </h3>
-
-        <p className="ccard__by">by {FOUNDER.name}</p>
 
         <div className="ccard__rating">
           <strong>{course.rating.toFixed(1)}</strong>
@@ -114,15 +113,17 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
           </Link>
         )}
 
+        {/* Icon only — two equally-weighted buttons made neither read
+            as the primary action. */}
         <a
-          className="wa wa--sm"
+          className="wa wa--icon"
           href={whatsappLink(waCourse(course.title))}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Get details about ${course.title} on WhatsApp`}
+          title="Ask about this course on WhatsApp"
+          aria-label={`Ask about ${course.title} on WhatsApp`}
         >
-          <Icon name="whatsapp" size={15} />
-          <span>WhatsApp</span>
+          <Icon name="whatsapp" size={17} />
         </a>
       </footer>
     </article>

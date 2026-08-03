@@ -152,6 +152,13 @@
   padding: 0.45em 0.8em;
   font-size: var(--fs-xs);
 }
+/* Square icon-only, for use beside a primary button. */
+.wa--icon {
+  width: 38px;
+  padding: 0;
+  flex: none;
+  aspect-ratio: 1;
+}
 .wa--lg {
   padding: 0.82em 1.5em;
   font-size: var(--fs-body);
@@ -443,51 +450,32 @@
   opacity: 1;
 }
 
-/* A wash in the course accent, so ten unrelated stock photos still
-   read as one set rather than a scrapbook. */
+/* No colour wash.
+
+   An accent tint was meant to make ten unrelated stock photos read as
+   one set. It did the opposite — every photo came out with a green or
+   teal cast that looked like a filter, not a design system. What is
+   left is a neutral top vignette, present only so the LIVE badge has
+   something to sit against on a bright image. */
 .cover::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--c) 42%, transparent),
-    color-mix(in srgb, var(--c) 8%, transparent) 55%,
-    rgba(8, 9, 12, 0.5)
-  );
-  mix-blend-mode: multiply;
+  background: linear-gradient(180deg, rgba(8, 9, 12, 0.35), transparent 38%);
 }
 
 :root[data-theme='dark'] .cover::after {
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--c) 55%, transparent),
-    rgba(8, 9, 12, 0.35) 55%,
-    rgba(8, 9, 12, 0.75)
-  );
+  background: linear-gradient(180deg, rgba(8, 9, 12, 0.45), transparent 40%),
+    linear-gradient(0deg, rgba(8, 9, 12, 0.35), transparent 30%);
 }
 
-.cover__label {
-  position: relative;
-  z-index: 2;
-  padding: 0.3em 0.75em;
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  color: var(--ink);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  text-align: center;
-}
 /* Cancel the parent flip. Harmless on abstract geometry, essential on
    photography — a mirrored photo puts any signage or faces the wrong
    way round. */
-.cover[data-rot='1'] .cover__label,
 .cover[data-rot='1'] .cover__img { transform: scaleX(-1); }
-.cover[data-rot='2'] .cover__label,
 .cover[data-rot='2'] .cover__img { transform: scaleY(-1); }
-.cover[data-rot='3'] .cover__label,
 .cover[data-rot='3'] .cover__img { transform: scale(-1); }
 
 /* ============================================================
