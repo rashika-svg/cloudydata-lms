@@ -350,7 +350,6 @@ export default function Home() {
             eyebrow="Learn by doing"
             title="Not a recorded course you never finish"
             sub="Concepts land through guided assignments and real projects, in live sessions where you can interrupt and ask."
-            center
           />
 
           <Grid>
@@ -380,7 +379,6 @@ export default function Home() {
             eyebrow="Learn by doing"
             title="Things you will actually build"
             sub="Every track ends with work that goes into your portfolio. These are real projects from the syllabus, not illustrations."
-            center
           />
 
           <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-3">
@@ -415,7 +413,7 @@ export default function Home() {
               <Stat key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
             ))}
           </div>
-          <p className="mt-6 text-center text-xs text-outline">
+          <p className="mt-6 text-xs text-outline">
             Figures are illustrative demo content for this front-end build.
           </p>
         </Wrap>
@@ -451,7 +449,7 @@ export default function Home() {
       {/* ---- Testimonials ----------------------------- */}
       <Section tone="alt">
         <Wrap>
-          <SectionHead eyebrow="Learner stories" title="Where people end up" center />
+          <SectionHead eyebrow="Learner stories" title="Where people end up" />
 
           <Grid min={320}>
             {DEMO_TESTIMONIALS.map((t, i) => (
@@ -475,7 +473,7 @@ export default function Home() {
             ))}
           </Grid>
 
-          <p className="mt-6 text-center text-xs text-outline">
+          <p className="mt-6 text-xs text-outline">
             Testimonials are demo content written for this front-end build.
           </p>
         </Wrap>
@@ -484,7 +482,7 @@ export default function Home() {
       {/* ---- FAQ -------------------------------------- */}
       <Section>
         <Wrap narrow>
-          <SectionHead eyebrow="Questions" title="Before you enrol" center />
+          <SectionHead eyebrow="Questions" title="Before you enrol" />
           <div className="flex flex-col">
             {FAQS.map((f, i) => (
               <AccordionItem key={f.q} title={f.q} defaultOpen={i === 0}>

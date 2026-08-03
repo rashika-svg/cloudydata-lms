@@ -57,35 +57,32 @@ export function Badge({
   )
 }
 
-/* ---- Section head ---------------------------------------- */
+/* ---- Section head ----------------------------------------
+   Always left-aligned. Centred heads gave every section a second
+   axis to read from, and next to a left-aligned card grid the two
+   never lined up — the eye had to reset at each band. */
 
 export function SectionHead({
   eyebrow,
   title,
   sub,
   action,
-  center = false,
 }: {
   eyebrow?: string
   title: ReactNode
   sub?: ReactNode
   action?: ReactNode
-  center?: boolean
 }) {
   return (
-    <header
-      className={`mb-8 flex flex-wrap items-end justify-between gap-6 ${center ? 'flex-col items-center text-center' : ''}`}
-    >
+    <header className="mb-8 flex flex-wrap items-end justify-between gap-6">
       <div>
         {eyebrow && (
           <span className="mb-2 block font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
             {eyebrow}
           </span>
         )}
-        <h2 className={`max-w-[24ch] text-[clamp(1.45rem,1.2rem+1.1vw,2rem)] ${center ? 'mx-auto' : ''}`}>{title}</h2>
-        {sub && (
-          <p className={`mt-3 max-w-[62ch] text-on-surface-variant ${center ? 'mx-auto' : ''}`}>{sub}</p>
-        )}
+        <h2 className="max-w-[24ch] text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">{title}</h2>
+        {sub && <p className="mt-3 max-w-[62ch] text-on-surface-variant">{sub}</p>}
       </div>
       {action && <div>{action}</div>}
     </header>

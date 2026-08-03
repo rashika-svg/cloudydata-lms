@@ -1,21 +1,26 @@
 /* ============================================================
-   Course card — M3 outlined card, in Tailwind utilities.
+   Course card.
 
-   Two calls to action, matching the real site: "Enroll NOW" and a
-   WhatsApp link with the course name pre-filled into the message.
+   Redesigned around a problem the previous version had: six bands of
+   equal weight — category chip, title, rating, icon list, price,
+   button — separated by rules. It read as a spec sheet, and three of
+   them in a row read as noise.
+
+   Now there are four, and each is a different KIND of thing:
+
+     the cover      identity — the category and duration sit on the
+                    photo's scrim, which empties a whole row out of
+                    the body and stops every card in a row repeating
+                    the same grey "DATA" chip
+     the title      the only large type
+     the strip      what you get, as three figures rather than three
+                    icon-and-label pairs; a tinted block, so the
+                    grouping is done by surface instead of a hairline
+     the close      what it costs, then the two calls to action
+
+   Both actions match the real site: "Enroll NOW", and a WhatsApp
+   link with the course name already written into the message.
    WhatsApp is icon-only so the primary action stays unambiguous.
-
-   Outlined rather than elevated. The tonal card surface sat within a
-   couple of percent of the page background, so in a three-up grid the
-   cards had no edge of their own — only a shadow doing the work of a
-   border. Now the card is the lowest surface (white in light, near
-   black in dark) with a hairline outline, and the elevation is spent
-   on hover, where it carries meaning.
-
-   Content is grouped rather than evenly spaced: identity (category,
-   title, rating) above the rule, commercials (what you get, what it
-   costs) below it, actions in the footer. The previous single gap
-   between every row gave five equal-weight bands and no hierarchy.
    ============================================================ */
 
 import { Link } from 'react-router-dom'
@@ -52,6 +57,12 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
   const showProgress = enrolledView || (enrolled && p.done > 0)
   const off = Math.round(((course.mrpINR - course.priceINR) / course.mrpINR) * 100)
 
+  const facts: [string, string][] = [
+    [String(lessonCount(course)), 'lessons'],
+    [String(course.projects), 'projects'],
+    [`${hours}h`, 'live'],
+  ]
+
   return (
     <article
       className="group/card rise relative flex flex-col overflow-hidden rounded-lg border border-outline-variant/70 bg-surface-lowest transition-[transform,box-shadow,border-color] duration-300 ease-emphasized hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--accent)_50%,transparent)] hover:shadow-e3"
@@ -70,7 +81,14 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
           <Cover slug={course.slug} accent={course.accent} />
         </span>
 
-        <span className="absolute top-3 left-3 z-2 inline-flex items-center gap-1.5 rounded-full bg-black/65 px-2.5 py-1 text-[0.625rem] font-medium tracking-[0.08em] text-white uppercase backdrop-blur-sm">
+        {/* Carries the overline below. Photographs vary, so the text
+            needs its own ground rather than trusting the image. */}
+        <span
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-2 h-3/5 bg-linear-to-t from-black/75 via-black/25 to-transparent"
+          aria-hidden="true"
+        />
+
+        <span className="absolute top-3 left-3 z-3 inline-flex items-center gap-1.5 rounded-full bg-black/65 px-2.5 py-1 text-[0.625rem] font-medium tracking-[0.08em] text-white uppercase backdrop-blur-sm">
           {/* Fixed cyan, not `primary`: the pill is dark in both themes
               and the light-theme primary is a dark teal that vanishes
               against it. */}
@@ -78,25 +96,22 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
         </span>
 
         {enrolled && !enrolledView && (
-          <span className="absolute top-3 right-3 z-2 inline-flex items-center gap-1 rounded-full bg-ok px-2.5 py-1 text-[0.625rem] font-medium tracking-wide text-white uppercase">
+          <span className="absolute top-3 right-3 z-3 inline-flex items-center gap-1 rounded-full bg-ok px-2.5 py-1 text-[0.625rem] font-medium tracking-wide text-white uppercase">
             <Icon name="check" size={12} /> Enrolled
           </span>
         )}
+
+        <span className="absolute inset-x-4 bottom-3 z-3 flex items-center gap-2 text-[0.625rem] font-medium tracking-widest text-white/90 uppercase">
+          {course.category}
+          <i className="size-0.75 rounded-full bg-white/45" aria-hidden="true" />
+          {course.durationLabel}
+        </span>
       </Link>
 
-      <div className="flex flex-1 flex-col px-5 pt-4">
-        <div className="mb-2.5 flex items-center justify-between gap-2 text-[0.6875rem]">
-          <span className="rounded-full bg-surface-container px-2.5 py-1 font-medium tracking-[0.04em] text-on-surface-variant uppercase">
-            {course.category}
-          </span>
-          <span className="inline-flex items-center gap-1 font-medium text-outline">
-            <Icon name="clock" size={12} /> {course.durationLabel}
-          </span>
-        </div>
-
-        {/* Clamped and floored at two lines so the rating rows line up
-            across a row of cards whatever the title length. */}
-        <h3 className="min-h-[2.7em] text-[1.0625rem] leading-[1.35] font-semibold">
+      <div className="flex flex-1 flex-col px-5 pt-4 pb-5">
+        {/* Floored at two lines so the strips line up across a row of
+            cards whatever the title length. */}
+        <h3 className="min-h-[2.6em] text-[1.0625rem] leading-[1.3] font-semibold">
           <Link
             to={`/courses/${course.slug}`}
             className="line-clamp-2 transition-colors duration-200 group-hover/card:text-primary"
@@ -111,16 +126,13 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
           <span className="text-outline">({course.learners.toLocaleString('en-IN')})</span>
         </div>
 
-        <ul className="mt-3.5 flex flex-wrap gap-x-3.5 gap-y-1.5 border-t border-outline-variant/60 pt-3.5 text-xs text-on-surface-variant">
-          <li className="inline-flex items-center gap-1.5">
-            <Icon name="list" size={13} /> {lessonCount(course)} lessons
-          </li>
-          <li className="inline-flex items-center gap-1.5">
-            <Icon name="box" size={13} /> {course.projects} projects
-          </li>
-          <li className="inline-flex items-center gap-1.5">
-            <Icon name="video" size={13} /> {hours}h live
-          </li>
+        <ul className="mt-4 grid grid-cols-3 divide-x divide-outline-variant/60 rounded-md bg-surface-container py-2.5">
+          {facts.map(([value, label]) => (
+            <li key={label} className="flex flex-col items-center gap-0.5 leading-none">
+              <strong className="text-[0.9375rem] font-semibold tabular-nums">{value}</strong>
+              <span className="text-[0.625rem] tracking-wide text-outline uppercase">{label}</span>
+            </li>
+          ))}
         </ul>
 
         {showProgress ? (
@@ -141,29 +153,29 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
             </em>
           </div>
         )}
+
+        {/* Both actions share a height and a radius so they read as one
+            control pair rather than a slab with a disc beside it. */}
+        <div className="mt-4 grid grid-cols-[1fr_auto] items-center gap-2.5">
+          <Link
+            to={enrolled ? `/learn/${course.slug}` : `/courses/${course.slug}`}
+            className="state-layer inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 text-[0.8125rem] font-semibold text-on-primary transition-shadow duration-200 hover:shadow-e1"
+          >
+            <span>{enrolled ? (p.done > 0 ? 'Continue' : 'Start learning') : 'Enroll NOW'}</span>
+          </Link>
+
+          <a
+            className="state-layer grid size-10 shrink-0 place-items-center rounded-full bg-wa/15 text-wa-dark ring-1 ring-wa/30 ring-inset transition-colors duration-200 hover:bg-wa/25"
+            href={whatsappLink(waCourse(course.title))}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Ask about this course on WhatsApp"
+            aria-label={`Ask about ${course.title} on WhatsApp`}
+          >
+            <Icon name="whatsapp" size={18} />
+          </a>
+        </div>
       </div>
-
-      {/* Both actions share a height and a radius so they read as one
-          control pair rather than a slab with a disc beside it. */}
-      <footer className="grid grid-cols-[1fr_auto] items-center gap-2.5 px-5 pt-4 pb-5">
-        <Link
-          to={enrolled ? `/learn/${course.slug}` : `/courses/${course.slug}`}
-          className="state-layer inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-4 text-[0.8125rem] font-semibold text-on-primary transition-shadow duration-200 hover:shadow-e1"
-        >
-          <span>{enrolled ? (p.done > 0 ? 'Continue' : 'Start learning') : 'Enroll NOW'}</span>
-        </Link>
-
-        <a
-          className="state-layer grid size-10 shrink-0 place-items-center rounded-full bg-wa/15 text-wa-dark ring-1 ring-wa/30 ring-inset transition-colors duration-200 hover:bg-wa/25"
-          href={whatsappLink(waCourse(course.title))}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Ask about this course on WhatsApp"
-          aria-label={`Ask about ${course.title} on WhatsApp`}
-        >
-          <Icon name="whatsapp" size={18} />
-        </a>
-      </footer>
     </article>
   )
 }

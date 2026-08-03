@@ -93,7 +93,7 @@ export default function About() {
               <Stat key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
             ))}
           </div>
-          <p className="mt-6 text-center text-xs text-outline">
+          <p className="mt-6 text-xs text-outline">
             Figures are illustrative demo content for this front-end build.
           </p>
         </Wrap>
@@ -102,8 +102,8 @@ export default function About() {
       {/* ---- How it works ----------------------------- */}
       <Section tone="alt">
         <Wrap>
-          <SectionHead eyebrow="How it works" title="Five things happen, in this order" center />
-          <ol className="mx-auto flex max-w-[860px] flex-col gap-3">
+          <SectionHead eyebrow="How it works" title="Five things happen, in this order" />
+          <ol className="flex max-w-[860px] flex-col gap-3">
             {HOW.map(([step, body], i) => (
               <li
                 key={step}
@@ -126,7 +126,7 @@ export default function About() {
       {/* ---- Principles ------------------------------- */}
       <Section>
         <Wrap>
-          <SectionHead eyebrow="What I hold to" title="Six principles, no exceptions" center />
+          <SectionHead eyebrow="What I hold to" title="Six principles, no exceptions" />
           <Grid>
             {PILLARS.map((p, i) => (
               <article
