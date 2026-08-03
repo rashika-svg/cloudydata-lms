@@ -37,7 +37,7 @@ export default function About() {
           <span className="mb-2 block font-mono text-[0.6875rem] font-medium tracking-[0.09em] text-outline uppercase">
             About me
           </span>
-          <h1 className="max-w-[22ch] text-[clamp(1.9rem,1.3rem+2.6vw,3.1rem)]">
+          <h1 className="max-w-[22ch] text-h1-lg">
             I teach data because it changed my career — and it should not cost a fortune.
           </h1>
           <p className="mt-4 max-w-[64ch] text-on-surface-variant">
@@ -49,7 +49,7 @@ export default function About() {
       {/* ---- Bio -------------------------------------- */}
       <Section top>
         <Wrap className="grid items-center gap-12 min-[880px]:grid-cols-[300px_minmax(0,1fr)]">
-          <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-8 text-center shadow-e1">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset px-6 py-8 text-center shadow-e1">
             <Avatar initials={FOUNDER.initials} size={90} />
             <strong className="mt-3 text-[1.15rem]">{FOUNDER.name}</strong>
             <span className="text-xs text-on-surface-variant">{FOUNDER.role}</span>
@@ -88,7 +88,7 @@ export default function About() {
       {/* ---- Stats ------------------------------------ */}
       <Section tight>
         <Wrap>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-8 shadow-e1">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-6 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-8 shadow-e1">
             {DEMO_STATS.map((s) => (
               <Stat key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
             ))}
@@ -107,7 +107,7 @@ export default function About() {
             {HOW.map(([step, body], i) => (
               <li
                 key={step}
-                className="rise flex gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-6 transition-shadow duration-500 hover:shadow-e1"
+                className="rise flex gap-6 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6 transition-shadow duration-500 hover:shadow-e1"
                 style={{ '--i': i } as React.CSSProperties}
               >
                 <span className="flex-none font-mono text-[1.2rem] font-semibold text-primary">
@@ -130,7 +130,7 @@ export default function About() {
           <Grid>
             {PILLARS.map((p, i) => (
               <article
-                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
+                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-6 shadow-e1 transition-shadow duration-500 ease-decelerate hover:shadow-e2"
                 key={p.title}
                 style={{ '--i': i } as React.CSSProperties}
               >

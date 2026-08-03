@@ -94,7 +94,7 @@ export default function CourseDetail() {
             )}
           </div>
 
-          <h1 className="text-[clamp(1.7rem,1.2rem+2.2vw,2.6rem)]">{course.title}</h1>
+          <h1 className="text-h1">{course.title}</h1>
           <p className="max-w-[64ch] text-on-dark/72">{course.description}</p>
 
           <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-on-dark/75">
@@ -122,7 +122,7 @@ export default function CourseDetail() {
         {/* The card comes first on narrow screens — the price is the
             question people arrive with. */}
         <aside className="max-wide:order-first wide:sticky wide:top-21">
-          <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest shadow-e3">
+          <div className="overflow-hidden rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset shadow-e3">
             <div className="relative">
               <Cover slug={course.slug} accent={course.accent} priority />
               {photo && (
@@ -213,7 +213,7 @@ export default function CourseDetail() {
 
         <div className="flex min-w-0 flex-col gap-6">
           {enrolled && progress.done > 0 && (
-            <section className="flex flex-wrap items-center gap-4 rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-e1">
+            <section className="flex flex-wrap items-center gap-4 rounded-lg border border-outline-variant glass ring-1 ring-[var(--glass-edge)] ring-inset p-4 shadow-e1">
               <div className="flex flex-col">
                 <strong className="text-sm">Your progress</strong>
                 <span className="text-xs text-on-surface-variant">
@@ -230,7 +230,7 @@ export default function CourseDetail() {
           )}
 
           <section className={PANEL}>
-            <h2 className="mb-4 text-[1.1875rem]">What you will learn</h2>
+            <h2 className="mb-4 text-h3">What you will learn</h2>
             <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(290px,100%),1fr))] gap-x-6 gap-y-3">
               {course.outcomes.map((o) => (
                 <li key={o} className="flex items-start gap-3 text-sm text-on-surface-variant">
@@ -242,7 +242,7 @@ export default function CourseDetail() {
           </section>
 
           <section className={PANEL}>
-            <h2 className="mb-4 text-[1.1875rem]">Tools you will use</h2>
+            <h2 className="mb-4 text-h3">Tools you will use</h2>
             <div className="flex flex-wrap gap-2">
               {course.tools.map((t) => (
                 <span
@@ -257,7 +257,7 @@ export default function CourseDetail() {
 
           <section className="overflow-hidden rounded-lg bg-surface-low">
             <div className="border-b border-outline-variant px-6 pt-6 pb-4">
-              <h2 className="text-[1.1875rem]">Course content</h2>
+              <h2 className="text-h3">Course content</h2>
               <p className="mt-1 text-sm text-on-surface-variant">
                 {course.curriculum.length} modules · {lessons} lessons · {formatDuration(minutes)} total
               </p>
@@ -333,7 +333,7 @@ export default function CourseDetail() {
           </section>
 
           <section className={PANEL}>
-            <h2 className="mb-4 text-[1.1875rem]">Your instructor</h2>
+            <h2 className="mb-4 text-h3">Your instructor</h2>
             <div className="flex gap-4">
               <Avatar initials={FOUNDER.initials} size={64} />
               <div className="flex flex-col gap-0.5">

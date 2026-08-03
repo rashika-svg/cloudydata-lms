@@ -243,11 +243,11 @@ export default function Learn() {
             )}
           </div>
 
-          <h1 className="mt-3 mb-6 text-[clamp(1.4rem,1.1rem+1.2vw,2rem)]">{active.title}</h1>
+          <h1 className="mt-3 mb-6 text-h2">{active.title}</h1>
 
           <div className="grid gap-8 min-[821px]:grid-cols-[minmax(0,1.6fr)_260px]">
             <div>
-              <h2 className="mb-3 text-[1.1875rem]">In this {kindLabel(active.kind).toLowerCase()}</h2>
+              <h2 className="mb-3 text-h3">In this {kindLabel(active.kind).toLowerCase()}</h2>
               <p className="mb-4 text-sm text-on-surface-variant">
                 {moduleOf?.summary} This session runs {formatDuration(active.minutes)} and sits in{' '}
                 <strong>{moduleOf?.title}</strong>, module {moduleNo} of {course.curriculum.length}.
@@ -261,7 +261,7 @@ export default function Learn() {
             </div>
 
             <aside>
-              <h2 className="mb-3 text-[1.1875rem]">Shortcuts</h2>
+              <h2 className="mb-3 text-h3">Shortcuts</h2>
               <dl className="border-t border-outline-variant">
                 {[
                   ['J', 'Next lesson'],

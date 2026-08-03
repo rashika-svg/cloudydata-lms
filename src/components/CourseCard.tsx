@@ -72,7 +72,7 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
          faint accent in the outline, and a 1.5% drift on the photo,
          over 500ms. The card should acknowledge the pointer, not
          react to it. */
-      className="group/card rise relative flex flex-col overflow-hidden rounded-lg border border-outline-variant/70 bg-surface-lowest transition-[box-shadow,border-color] duration-500 ease-decelerate hover:border-[color-mix(in_srgb,var(--accent)_28%,var(--m3-outline-variant))] hover:shadow-e2"
+      className="group/card rise relative flex flex-col overflow-hidden rounded-lg border border-outline-variant/70 glass ring-1 ring-[var(--glass-edge)] ring-inset transition-[box-shadow,border-color] duration-500 ease-decelerate hover:border-[color-mix(in_srgb,var(--accent)_28%,var(--m3-outline-variant))] hover:shadow-e2"
       data-cursor="card"
       style={
         {
@@ -133,11 +133,11 @@ export function CourseCard({ course, index = 0, enrolledView = false }: CourseCa
           <span className="text-outline">({course.learners.toLocaleString('en-IN')})</span>
         </div>
 
-        <ul className="mt-4 grid grid-cols-3 divide-x divide-outline-variant/60 rounded-md bg-surface-container py-2.5">
+        <ul className="mt-4 grid grid-cols-3 divide-x divide-outline-variant/60 rounded-md bg-linear-to-b from-surface-container to-surface-high py-2.5">
           {facts.map(([value, label]) => (
             <li key={label} className="flex flex-col items-center gap-0.5 leading-none">
               <strong className="text-[0.9375rem] font-semibold tabular-nums">{value}</strong>
-              <span className="text-[0.625rem] tracking-wide text-outline uppercase">{label}</span>
+              <span className="text-[0.625rem] tracking-wide text-on-surface-variant uppercase">{label}</span>
             </li>
           ))}
         </ul>
