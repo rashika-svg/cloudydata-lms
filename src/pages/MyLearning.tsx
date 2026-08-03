@@ -4,12 +4,14 @@
 
 import { Link } from 'react-router-dom'
 import { COURSES, COURSE_BY_SLUG, allLessons, formatDuration } from '../data/courses'
-import { WA_GENERAL, whatsappLink } from '../data/site'
+import { WA_GENERAL } from '../data/site'
 import { useApp } from '../store/app'
 import { CourseCard } from '../components/CourseCard'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
+import { Grid, PageHead, Section, Wrap } from '../components/ui/Layout'
 import { Cover, Empty, Progress, Ring, SectionHead } from '../components/ui/Primitives'
+import { Wa } from '../components/ui/Wa'
 
 export default function MyLearning() {
   const { enrolled, completed, progressFor, lastLessonFor } = useApp()
@@ -55,104 +57,87 @@ export default function MyLearning() {
   if (courses.length === 0) {
     return (
       <>
-        <section className="phead">
-          <div className="wrap">
-            <h1>My learning</h1>
-            <p>Courses you join appear here with your progress, saved in this browser.</p>
-          </div>
-        </section>
+        <PageHead title="My learning">
+          Courses you join appear here with your progress, saved in this browser.
+        </PageHead>
 
-        <section className="section section--top">
-          <div className="wrap">
+        <Section top>
+          <Wrap>
             <Empty
               icon="book"
               title="You have not joined a course yet"
               body="Open any course and tap Enroll NOW to try the learning experience. For a real batch, message Ajay on WhatsApp."
             >
-              <div className="empty__actions">
+              <div className="mt-2 flex flex-wrap justify-center gap-3">
                 <Button to="/courses" variant="brand" icon="arrow-right">
                   Browse courses
                 </Button>
-                <a className="wa" href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
-                  <Icon name="whatsapp" size={17} />
-                  <span>Ask on WhatsApp</span>
-                </a>
+                <Wa message={WA_GENERAL}>Ask on WhatsApp</Wa>
               </div>
             </Empty>
 
             <SectionHead title="Popular starting points" />
-            <div className="grid grid--3">
+            <Grid>
               {COURSES.slice(0, 3).map((c, i) => (
                 <CourseCard key={c.slug} course={c} index={i} />
               ))}
-            </div>
-          </div>
-        </section>
+            </Grid>
+          </Wrap>
+        </Section>
       </>
     )
   }
 
   return (
     <>
-      <section className="phead">
-        <div className="wrap">
-          <h1>My learning</h1>
-          <p>
-            {courses.length} {courses.length === 1 ? 'course' : 'courses'} in progress. Everything here is stored in this
-            browser only.
-          </p>
-        </div>
-      </section>
+      <PageHead title="My learning">
+        {courses.length} {courses.length === 1 ? 'course' : 'courses'} in progress. Everything here is stored in this
+        browser only.
+      </PageHead>
 
       {resume && (
-        <section className="wrap">
-          <div className="resume rise">
-            <div className="resume__cover">
+        <Wrap>
+          <div className="rise mt-8 grid items-center gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-e2 min-[720px]:grid-cols-[200px_minmax(0,1fr)_auto]">
+            <div className="overflow-hidden rounded-md">
               <Cover slug={resume.course.slug} accent={resume.course.accent} />
             </div>
-            <div className="resume__body">
-              <span className="resume__kicker">
+
+            <div className="flex min-w-0 flex-col gap-2">
+              <span className="inline-flex items-center gap-1.5 font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
                 <Icon name="play" size={12} filled /> Continue where you left off
               </span>
-              <h2>{resume.lesson.title}</h2>
-              <p>
+              <h2 className="text-[1.3rem]">{resume.lesson.title}</h2>
+              <p className="text-xs text-on-surface-variant">
                 {resume.course.title} · {resume.mod?.title} · {formatDuration(resume.lesson.minutes)}
               </p>
               <Progress ratio={resume.progress.ratio} showValue />
             </div>
-            <div className="resume__side">
+
+            <div className="flex flex-col items-center gap-3">
               <Ring ratio={resume.progress.ratio} size={78} stroke={6} />
               <Button to={`/learn/${resume.course.slug}?lesson=${resume.lesson.id}`} variant="brand" icon="arrow-right">
                 Resume
               </Button>
             </div>
           </div>
-        </section>
+        </Wrap>
       )}
 
-      <section className="section section--top">
-        <div className="wrap">
-          <div className="mysum">
-            <div>
-              <strong>{Math.round(overall * 100)}%</strong>
-              <span>Overall progress</span>
-            </div>
-            <div>
-              <strong>{totals.done}</strong>
-              <span>Lessons completed</span>
-            </div>
-            <div>
-              <strong>{totals.total - totals.done}</strong>
-              <span>Lessons remaining</span>
-            </div>
-            <div>
-              <strong>{formatDuration(totals.minutes)}</strong>
-              <span>Time invested</span>
-            </div>
-            <div>
-              <strong>{totals.complete}</strong>
-              <span>Courses finished</span>
-            </div>
+      <Section top>
+        <Wrap>
+          <div className="mb-8 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 rounded-lg border border-outline-variant bg-surface-lowest p-6">
+            {[
+              { value: `${Math.round(overall * 100)}%`, label: 'Overall progress' },
+              { value: totals.done, label: 'Lessons completed' },
+              { value: totals.total - totals.done, label: 'Lessons remaining' },
+              { value: formatDuration(totals.minutes), label: 'Time invested' },
+              { value: totals.complete, label: 'Courses finished' },
+            ].map((s) => (
+              <div key={s.label} className="flex flex-col gap-0.5">
+                <strong className="text-[1.55rem] font-bold tracking-[-0.026em] tabular-nums">{s.value}</strong>
+                <span className="text-xs text-on-surface-variant">{s.label}</span>
+              </div>
+            ))}
           </div>
 
           <SectionHead
@@ -164,18 +149,21 @@ export default function MyLearning() {
             }
           />
 
-          <div className="grid grid--3">
+          <Grid>
             {courses.map((c, i) => (
               <CourseCard key={c.slug} course={c} index={i} enrolledView />
             ))}
-          </div>
+          </Grid>
 
-          <p className="note">
+          <p className="mt-6 text-xs text-outline">
             This is a demo of the learning experience. To join a real live batch, message Ajay on WhatsApp — or{' '}
-            <Link to="/courses">browse the catalogue</Link>.
+            <Link to="/courses" className="text-primary underline underline-offset-[3px]">
+              browse the catalogue
+            </Link>
+            .
           </p>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
     </>
   )
 }

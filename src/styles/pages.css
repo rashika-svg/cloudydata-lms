@@ -49,7 +49,7 @@
    it, just the product panel. */
 .hero__title {
   font-size: clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.02;
 }
@@ -99,7 +99,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-weight: 650;
+  font-weight: 600;
   color: var(--brand-text);
 }
 .hero__by a:hover {
@@ -533,9 +533,7 @@
 .finder__opt strong {
   font-size: var(--fs-sm);
 }
-/* The hint under the label — not the icon, which keeps the tile's own
-   colour so it can travel to brand on hover. */
-.finder__opt span span:not(.mi) {
+.finder__opt span span {
   font-size: var(--fs-xs);
   color: var(--ink-3);
 }
@@ -550,7 +548,7 @@
   background: none;
   color: var(--ink-3);
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 500;
 }
 .finder__back:hover,
 .finder__again:hover {
@@ -1150,7 +1148,7 @@
   background: transparent;
   color: var(--m3-on-surface-variant);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: 500;
   overflow: hidden;
   isolation: isolate;
   transition:
@@ -1237,7 +1235,7 @@
   padding: 0.28em 0.7em;
   border-radius: var(--r-pill);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 500;
 }
 .dhero__live {
   background: rgba(255, 255, 255, 0.12);
@@ -1473,7 +1471,7 @@
   align-items: center;
   gap: 6px;
   font-size: var(--fs-xs);
-  font-weight: 650;
+  font-weight: 500;
   color: var(--ink-3);
 }
 .inst__links a:hover {
@@ -1522,7 +1520,7 @@
 }
 .dbuy__price strong {
   font-size: 1.9rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: var(--track-display);
 }
 .dbuy__price s {
@@ -1532,14 +1530,14 @@
 .dbuy__price em {
   font-style: normal;
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--ok);
 }
 .dbuy__enrolled {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--ok);
 }
 .dbuy__note {
@@ -1610,7 +1608,7 @@
 }
 .buybar strong {
   font-size: 1.1rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 .buybar span {
   font-size: var(--fs-micro);
@@ -1714,7 +1712,7 @@
 }
 .mysum strong {
   font-size: 1.55rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: var(--track-display);
   font-variant-numeric: tabular-nums;
 }
@@ -1793,7 +1791,7 @@
 .channel__note {
   font-size: var(--fs-micro);
   color: var(--wa-dark);
-  font-weight: 650;
+  font-weight: 500;
 }
 .channel__go {
   flex: none;
@@ -1848,7 +1846,7 @@
   align-items: center;
   gap: 5px;
   font-size: var(--fs-sm);
-  font-weight: 650;
+  font-weight: 600;
   color: var(--ink-2);
 }
 .outline__back:hover {
@@ -1879,7 +1877,7 @@
   gap: var(--s2);
   padding: var(--s4) var(--s4) var(--s2);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 500;
 }
 .outline__mod > span:first-child {
   font-family: var(--mono);

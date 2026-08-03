@@ -20,6 +20,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { siInstagram, siWhatsapp } from 'simple-icons'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -80,13 +81,34 @@ const ICONS = {
   command: 'keyboard_command_key',
 }
 
+/* Brand marks. Material Symbols carries no logos, so these come from
+   simple-icons — the official artwork, solid, on a 24px grid, which is
+   how each of these companies draws its own mark.
+
+   LinkedIn is not in that package (removed on the company's request),
+   so its mark is kept here. Same construction as the others: the
+   rounded plate with the wordmark knocked out of it. */
+const LINKEDIN =
+  'M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z'
+
+const BRANDS = {
+  whatsapp: siWhatsapp.path,
+  linkedin: LINKEDIN,
+  instagram: siInstagram.path,
+}
+
 /* Every glyph in the packages is a single <path d> on a 0 -960 960 960
-   grid, so pulling the one attribute is enough. */
+   grid, so pulling the one attribute is enough.
+
+   Coordinates are rounded to whole units on the way through: the grid
+   is 40× the rendered size, so a unit is a fortieth of a pixel and the
+   fractions Google ships are below anything a screen can show. Costs
+   nothing visually, takes ~18% off the generated file. */
 function pathOf(weight, file) {
   const svg = readFileSync(join(ROOT, 'node_modules', `@material-symbols/svg-${weight}`, 'rounded', `${file}.svg`), 'utf8')
   const d = svg.match(/ d="([^"]+)"/)
   if (!d) throw new Error(`no path in ${file}.svg (weight ${weight})`)
-  return d[1]
+  return d[1].replace(/-?\d+\.\d+/g, (n) => String(Math.round(parseFloat(n))))
 }
 
 const rows = Object.entries(ICONS).map(([key, spec]) => {
@@ -120,6 +142,13 @@ export interface IconCuts {
 export const ICON_PATHS = {
 ${rows.join('\n')}
 } satisfies Record<string, IconCuts>
+
+/* Brand marks — solid, on a 24px grid rather than Material's 960. */
+export const BRAND_PATHS = {
+${Object.entries(BRANDS)
+  .map(([key, d]) => `  ${key}: '${d}',`)
+  .join('\n')}
+} satisfies Record<string, string>
 `
 
 writeFileSync(join(ROOT, 'src/components/ui/icon-paths.ts'), out)

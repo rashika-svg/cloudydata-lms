@@ -18,7 +18,12 @@ export function SiteLayout() {
 
   return (
     <>
-      <a className="skip" href="#main">
+      {/* Off-screen until focused, so keyboard users get past the
+          header without it costing anyone else a pixel. */}
+      <a
+        className="fixed top-3 left-3 z-1000 -translate-y-[250%] rounded-md bg-on-surface px-4 py-3 text-sm font-semibold text-surface-lowest transition-transform duration-200 focus-visible:translate-y-0"
+        href="#main"
+      >
         Skip to content
       </a>
 
@@ -26,7 +31,11 @@ export function SiteLayout() {
       <Header />
 
       {/* Keyed on pathname so each page plays its enter animation. */}
-      <main id="main" key={location.pathname} className={isPlayer ? 'page page--full' : 'page'}>
+      <main
+        id="main"
+        key={location.pathname}
+        className={isPlayer ? 'block' : 'block animate-[pagein_280ms_var(--ease)]'}
+      >
         <Outlet />
       </main>
 

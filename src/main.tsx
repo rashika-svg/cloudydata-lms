@@ -2,7 +2,9 @@ import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider, createHashRouter } from 'react-router-dom'
 
+/* tokens first — Tailwind's @theme reads these variables. */
 import './styles/tokens.css'
+import './styles/tailwind.css'
 import './styles/base.css'
 import './styles/components.css'
 import './styles/pages.css'

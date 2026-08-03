@@ -13,7 +13,9 @@ import { useApp } from '../store/app'
 import { useCopy } from '../hooks/motion'
 import { AccordionItem } from '../components/ui/Accordion'
 import { Button } from '../components/ui/Button'
+import { SelectField, TextField } from '../components/ui/Field'
 import { Icon, type IconName } from '../components/ui/Icon'
+import { PageHead, Panel, Section, Wrap } from '../components/ui/Layout'
 import { SectionHead } from '../components/ui/Primitives'
 
 interface Fields {
@@ -84,37 +86,44 @@ export default function Contact() {
 
   return (
     <>
-      <section className="phead">
-        <div className="wrap">
-          <h1>Talk to me before you enrol</h1>
-          <p>
-            Tell me your background and what you want to be doing in a year. You get a straight recommendation —{' '}
-            {CONTACT.replyTime.toLowerCase()}.
-          </p>
-        </div>
-      </section>
+      <PageHead title="Talk to me before you enrol">
+        Tell me your background and what you want to be doing in a year. You get a straight recommendation —{' '}
+        {CONTACT.replyTime.toLowerCase()}.
+      </PageHead>
 
-      <section className="section section--top">
-        <div className="wrap contact">
-          <div className="contact__channels">
+      <Section top>
+        <Wrap className="grid items-start gap-8 wide:grid-cols-[340px_minmax(0,1fr)]">
+          <div className="flex flex-col gap-3 wide:sticky wide:top-23">
             {CHANNELS.map((c, i) => (
               <a
                 key={c.label}
-                className={`channel ${c.primary ? 'channel--primary' : ''} rise`}
+                className={`group rise flex items-center gap-4 rounded-lg border p-4 transition-[border-color,transform,box-shadow] duration-200 hover:translate-x-0.5 hover:shadow-e1 ${
+                  c.primary
+                    ? 'border-wa/45 bg-wa/8'
+                    : 'border-outline-variant bg-surface-lowest hover:border-outline'
+                }`}
                 style={{ '--i': i } as React.CSSProperties}
                 href={c.href}
                 target={c.href.startsWith('mailto:') ? undefined : '_blank'}
                 rel="noopener noreferrer"
               >
-                <span className="channel__icon">
+                <span
+                  className={`grid size-10.5 flex-none place-items-center rounded-md ${
+                    c.primary ? 'bg-wa text-wa-ink' : 'bg-surface-container text-on-surface-variant'
+                  }`}
+                >
                   <Icon name={c.icon} size={18} />
                 </span>
-                <span className="channel__body">
-                  <span className="channel__label">{c.label}</span>
-                  <strong>{c.value}</strong>
-                  {c.note && <span className="channel__note">{c.note}</span>}
+                <span className="flex min-w-0 flex-1 flex-col gap-px">
+                  <span className="text-[0.6875rem] text-outline">{c.label}</span>
+                  <strong className="text-sm">{c.value}</strong>
+                  {c.note && <span className="text-[0.6875rem] font-medium text-wa-dark">{c.note}</span>}
                 </span>
-                <Icon name="arrow-up-right" size={15} className="channel__go" />
+                <Icon
+                  name="arrow-up-right"
+                  size={15}
+                  className="flex-none text-outline transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
               </a>
             ))}
 
@@ -122,7 +131,11 @@ export default function Contact() {
                 the label swaps to a tick and swaps back on its own. */}
             <button
               type="button"
-              className={`copyrow ${copied ? 'is-copied' : ''}`}
+              className={`inline-flex items-center justify-center gap-2 rounded-full border border-dashed px-4 py-2.5 text-xs transition-colors duration-200 ${
+                copied
+                  ? 'border-ok text-ok'
+                  : 'border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface'
+              }`}
               onClick={() => copy(CONTACT.phoneDisplay)}
             >
               <Icon name={copied ? 'check' : 'clipboard'} size={15} />
@@ -130,63 +143,56 @@ export default function Contact() {
             </button>
           </div>
 
-          <div className="contact__form">
-            <form className="form panel" onSubmit={onSubmit} noValidate>
-              <h2>Or send a message</h2>
-              <p className="form__intro">
-                WhatsApp is faster, but if you prefer to write it out, this reaches the same inbox.
-              </p>
-
-              <div className="fld__pair">
-                <div className={`fld ${err('name') ? 'has-error' : ''}`}>
-                  <label htmlFor="name">Your name</label>
-                  <input id="name" value={values.name} onChange={set('name')} onBlur={blur('name')} placeholder="Priya N." />
-                  {err('name') && <span className="fld__err">{err('name')}</span>}
-                </div>
-
-                <div className={`fld ${err('email') ? 'has-error' : ''}`}>
-                  <label htmlFor="email">Email address</label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={values.email}
-                    onChange={set('email')}
-                    onBlur={blur('email')}
-                    placeholder="you@example.com"
-                  />
-                  {err('email') && <span className="fld__err">{err('email')}</span>}
-                </div>
+          <Panel>
+            <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+              <div>
+                <h2 className="text-[1.1875rem]">Or send a message</h2>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  WhatsApp is faster, but if you prefer to write it out, this reaches the same inbox.
+                </p>
               </div>
 
-              <div className="fld">
-                <label htmlFor="course">Course you are interested in</label>
-                <div className="fld__select">
-                  <select id="course" value={values.course} onChange={set('course')}>
-                    <option value="">Not sure yet — recommend one</option>
-                    {COURSES.map((c) => (
-                      <option key={c.slug} value={c.slug}>
-                        {c.title}
-                      </option>
-                    ))}
-                  </select>
-                  <Icon name="chevron-down" size={15} />
-                </div>
-              </div>
-
-              <div className={`fld ${err('message') ? 'has-error' : ''}`}>
-                <label htmlFor="message">Where are you now, and where do you want to be?</label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  value={values.message}
-                  onChange={set('message')}
-                  onBlur={blur('message')}
-                  placeholder="I work in operations, no coding background, and I want to move into analytics within a year…"
+              <div className="grid gap-4 min-[560px]:grid-cols-2">
+                <TextField
+                  label="Your name"
+                  value={values.name}
+                  onChange={set('name')}
+                  onBlur={blur('name')}
+                  placeholder="Priya N."
+                  error={err('name')}
                 />
-                {err('message') && <span className="fld__err">{err('message')}</span>}
+                <TextField
+                  label="Email address"
+                  type="email"
+                  value={values.email}
+                  onChange={set('email')}
+                  onBlur={blur('email')}
+                  placeholder="you@example.com"
+                  error={err('email')}
+                />
               </div>
 
-              <div className="form__foot">
+              <SelectField label="Course you are interested in" value={values.course} onChange={set('course')}>
+                <option value="">Not sure yet — recommend one</option>
+                {COURSES.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title}
+                  </option>
+                ))}
+              </SelectField>
+
+              <TextField
+                textarea
+                label="Where are you now, and where do you want to be?"
+                rows={5}
+                value={values.message}
+                onChange={set('message')}
+                onBlur={blur('message')}
+                placeholder="I work in operations, no coding background, and I want to move into analytics within a year…"
+                error={err('message')}
+              />
+
+              <div className="flex flex-wrap items-center gap-4 pt-2">
                 <Button
                   type="submit"
                   size="lg"
@@ -196,32 +202,32 @@ export default function Contact() {
                 >
                   {status === 'idle' ? 'Send message' : status === 'sending' ? 'Checking…' : 'Validated'}
                 </Button>
-                <p className="form__fine">{CONTACT.replyTime}</p>
+                <p className="text-xs text-outline">{CONTACT.replyTime}</p>
               </div>
 
               {status === 'sent' && (
-                <p className="form__result" role="status">
+                <p className="rounded-md bg-ok-container px-4 py-3 text-xs text-ok" role="status">
                   Passed validation. This is a front-end demo with no server — in a live build it would reach{' '}
                   {CONTACT.email}. To actually reach Ajay, use WhatsApp.
                 </p>
               )}
             </form>
-          </div>
-        </div>
-      </section>
+          </Panel>
+        </Wrap>
+      </Section>
 
-      <section className="section section--alt">
-        <div className="wrap wrap--narrow">
+      <Section tone="alt">
+        <Wrap narrow>
           <SectionHead eyebrow="Questions" title="Asked most often" center />
-          <div className="faq">
+          <div className="flex flex-col">
             {FAQS.slice(0, 5).map((f, i) => (
               <AccordionItem key={f.q} title={f.q} defaultOpen={i === 0}>
                 <p>{f.a}</p>
               </AccordionItem>
             ))}
           </div>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
     </>
   )
 }
