@@ -92,13 +92,17 @@
   --e4: 0 2px 6px rgba(var(--shadow-tint), 0.07), 0 20px 36px -10px rgba(var(--shadow-tint), 0.14);
 
   /* ============================================================
-     Legacy aliases → M3 roles.
-     Everything below maps the old vocabulary onto the new system.
+     Bridge → M3 roles.
+
+     What survives here is what the utilities cannot reach: values
+     used inside raw CSS (the cursor, the cover art, the scrollbar)
+     or composed into gradients and shadows. The vocabulary the
+     markup uses now comes from Tailwind's @theme, which points at
+     the same roles.
      ============================================================ */
 
   --bg: var(--m3-surface);
   --surface: var(--m3-surface-container-lowest);
-  --surface-2: var(--m3-surface-container);
   --sunk: var(--m3-surface-container-high);
   --dark: #0d1314;
   --dark-2: #171d1e;
@@ -109,13 +113,9 @@
   --line-3: var(--m3-outline);
 
   --ink: var(--m3-on-surface);
-  --ink-2: var(--m3-on-surface-variant);
-  --ink-3: color-mix(in srgb, var(--m3-on-surface-variant) 80%, var(--m3-surface));
-  --ink-4: var(--m3-outline);
 
   --brand: var(--m3-primary);
   --brand-hi: color-mix(in srgb, var(--m3-primary) 85%, #000);
-  --brand-text: var(--m3-primary);
   --brand-a08: color-mix(in srgb, var(--m3-primary) 8%, transparent);
   --brand-a15: color-mix(in srgb, var(--m3-primary) 16%, transparent);
   --on-brand: var(--m3-on-primary);
@@ -139,20 +139,8 @@
   --li: #0a66c2;
   --ig: #d62976;
 
-  /* Shape aliases. M3 uses noticeably softer corners than before. */
   --r: var(--shape-md);
-  --r-lg: var(--shape-lg);
   --r-pill: var(--shape-full);
-
-  --shadow-1: var(--e1);
-  --shadow-2: var(--e2);
-  --shadow-3: var(--e3);
-  /* M3 has no inset top-highlight — depth comes from the surface
-     container ladder. This must stay a VALID shadow value rather than
-     `none`, because eight rules compose it as `box-shadow: X, var(--lift)`
-     and `X, none` is invalid, which silently drops the whole
-     declaration and the shadow with it. */
-  --lift: 0 0 0 0 rgba(0, 0, 0, 0);
 
   --grad-brand: linear-gradient(120deg, var(--m3-primary) 0%, #0891b2 45%, var(--m3-tertiary) 100%);
   --glow: 0 0 0 1px color-mix(in srgb, var(--m3-primary) 22%, transparent),

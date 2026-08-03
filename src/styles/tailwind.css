@@ -205,4 +205,132 @@
      white radial gradient, invisible by design on a dark surface and
      a milky smudge on a light one. The per-course accent now lives
      somewhere it can actually be seen: the hovered outline. */
+
+  /* ---- The one gradient on the site ----------------------
+     Reserved for a single button: the hero's primary action, opted
+     in explicitly. Every other button is a flat colour, and that
+     exclusivity is the whole point — a gradient used once reads as
+     the primary action; a gradient used everywhere reads as
+     decoration and stops signalling anything. */
+  .btn--gradient {
+    background: var(--grad-brand);
+    border-color: transparent;
+    color: var(--on-brand);
+    box-shadow: var(--glow);
+  }
+  .btn--gradient:hover:not(:disabled) {
+    background: var(--grad-brand);
+    filter: brightness(1.08);
+    box-shadow: var(--glow);
+  }
+
+  /* ---- Custom cursor -------------------------------------
+     Mounted only for fine pointers with hover, and never under
+     reduced motion, so `cursor: none` can never strand anyone.
+
+     Kept as component classes rather than utilities on purpose: the
+     ring's size, radius and fill are decided by TWO independent bits
+     of state (`data-state` and `.is-down`) that land on the SAME
+     element, and both are written imperatively so no React render
+     happens per frame. Utilities compose that as nested selectors,
+     which is the wrong shape — this is a case the cascade does
+     better. Every state change is a transform or a colour, so the
+     whole thing stays on the compositor. */
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+
+  .cursor {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--t2) var(--ease);
+  }
+  .cursor.is-visible {
+    opacity: 1;
+  }
+
+  .cursor__dot,
+  .cursor__ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    will-change: transform;
+  }
+
+  /* Pinned to the pointer with no smoothing at all — any lag here
+     reads as input latency. */
+  .cursor__dot {
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    transition:
+      width var(--t2) var(--ease-out),
+      height var(--t2) var(--ease-out),
+      opacity var(--t2) var(--ease),
+      background var(--t2) var(--ease);
+  }
+
+  /* Trails behind with exponential smoothing, so the pointer appears
+     to have weight. */
+  .cursor__ring {
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--line-3);
+    transition:
+      width var(--t3) var(--ease-out),
+      height var(--t3) var(--ease-out),
+      border-color var(--t2) var(--ease),
+      background var(--t2) var(--ease),
+      border-radius var(--t3) var(--ease-out),
+      opacity var(--t2) var(--ease);
+  }
+
+  /* Link or button — the ring opens up and takes the accent. */
+  .cursor[data-state='link'] .cursor__ring {
+    width: 54px;
+    height: 54px;
+    border-color: var(--brand);
+    background: var(--brand-a08);
+  }
+
+  /* Card — opens further and fills a touch more, so a whole surface
+     reads as one target rather than a set of small ones. */
+  .cursor[data-state='card'] .cursor__ring {
+    width: 74px;
+    height: 74px;
+    border-color: var(--brand-a15);
+    background: var(--brand-a08);
+  }
+
+  /* Text field — collapses to a caret bar. */
+  .cursor[data-state='text'] .cursor__ring {
+    width: 2px;
+    height: 26px;
+    border-radius: 1px;
+    border-color: transparent;
+    background: var(--ink);
+  }
+
+  /* The dot hides whenever the ring has taken on a meaning. */
+  .cursor[data-state='link'] .cursor__dot,
+  .cursor[data-state='card'] .cursor__dot,
+  .cursor[data-state='text'] .cursor__dot {
+    opacity: 0;
+  }
+
+  /* Press — everything contracts, so a click feels committed. */
+  .cursor.is-down .cursor__ring {
+    width: 26px;
+    height: 26px;
+    background: var(--brand-a15);
+  }
+  .cursor.is-down[data-state='text'] .cursor__ring {
+    width: 2px;
+    height: 22px;
+  }
 }

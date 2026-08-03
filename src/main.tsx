@@ -2,13 +2,12 @@ import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider, createHashRouter } from 'react-router-dom'
 
-/* tokens first — Tailwind's @theme reads these variables. */
+/* Tokens first — Tailwind's @theme reads these variables, so they
+   have to be defined before it binds its colour and shape scales. */
 import './styles/tokens.css'
 import './styles/tailwind.css'
 import './styles/base.css'
-import './styles/components.css'
-import './styles/pages.css'
-import './styles/micro.css'
+import './styles/cover.css'
 
 import { AppProvider } from './store/app'
 import { SiteLayout } from './components/site/SiteLayout'
