@@ -1,5 +1,16 @@
 @import 'tailwindcss';
 
+/* Both of these MUST be imported into a layer.
+
+   Tailwind emits its own rules inside `@layer theme, base, components,
+   utilities`, and in the cascade UNLAYERED css beats every layered rule
+   regardless of specificity. Imported plainly, the reset's `* { margin: 0 }`
+   silently overrode `mx-auto` on every centred column — the whole site
+   sat flush left — and `a { color: inherit }` overrode `text-primary`
+   on every link. Layering them puts both back under the utilities. */
+@import './base.css' layer(base);
+@import './cover.css' layer(components);
+
 /* ============================================================
    Tailwind theme — bound to the Material 3 token layer.
 
