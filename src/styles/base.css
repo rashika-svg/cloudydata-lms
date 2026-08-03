@@ -201,46 +201,12 @@ a {
 }
 
 /* ============================================================
-   Layout helpers
+   Animation utilities and shared keyframes.
+
+   The mount entrance is an ANIMATION, not a persisted hidden state,
+   so it always ends visible and can never leave the page blank —
+   which an earlier IntersectionObserver approach did.
    ============================================================ */
-
-.wrap {
-  width: 100%;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--pad);
-}
-
-.wrap--narrow {
-  max-width: 820px;
-}
-
-/* More air than a dense app would use — generous vertical rhythm is
-   most of what separates a premium marketing page from a cramped one. */
-.section {
-  padding-block: clamp(var(--s8), 7vw, var(--s9));
-}
-.section--tight {
-  padding-block: var(--s7);
-}
-.section--top {
-  padding-top: var(--s6);
-}
-.section--alt {
-  background: var(--surface-2);
-  border-block: 1px solid var(--line);
-}
-
-.grid {
-  display: grid;
-  gap: var(--s5);
-}
-.grid--2 {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-.grid--3 {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
 
 @keyframes pagein {
   from {
@@ -248,8 +214,6 @@ a {
   }
 }
 
-/* Mount entrance. An animation, not a persisted hidden state, so it
-   always ends visible and can never leave content blank. */
 .rise {
   animation: rise var(--t4) var(--ease-out) backwards;
   animation-delay: calc(var(--i, 0) * 55ms * var(--motion));
@@ -271,20 +235,6 @@ a {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-.note {
-  margin-top: var(--s5);
-  font-size: var(--fs-xs);
-  color: var(--ink-4);
-}
-.note--center {
-  text-align: center;
-}
-.note a {
-  color: var(--brand-text);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* Used by the mobile drawer scrim, which is a Tailwind component. */
@@ -317,5 +267,124 @@ a {
   }
   100% {
     transform: translateX(430%);
+  }
+}
+
+/* ============================================================
+   Keyframes used by Tailwind's arbitrary `animate-[…]` utilities.
+
+   They live here rather than beside their components because CSS
+   keyframes are global regardless of where they are declared, and
+   one list is easier to audit than nine scattered ones.
+   ============================================================ */
+
+/* The live dot on a course card and in the detail hero. */
+@keyframes livepulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* The toast's auto-dismiss timer, drawn as a retracting rule. */
+@keyframes toasttimer {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* The command palette snaps in — spring easing, applied at the call site. */
+@keyframes cmdk-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+
+/* The glow behind the hero console breathes. */
+@keyframes pulse-glow {
+  50% {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+
+/* Console rows deal themselves in, one after another. */
+@keyframes console-row {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+/* Two identical sets side by side, so -50% is a seamless loop. */
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0), 104vh, 0) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   Scroll-driven reveals.
+
+   Native CSS scroll-driven animation: the browser ties the keyframes
+   to the element's own position in the viewport, so there is no
+   observer, no JS, and no state that can get stuck hidden.
+
+   Gated behind @supports and applied only to elements that are
+   already visible by default — if the feature is missing, or the
+   query fails, nothing changes and the content simply shows. That is
+   the opposite of the earlier IntersectionObserver approach, which
+   could and did leave the page blank.
+   ============================================================ */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Upgrades the mount entrance in place: same elements, same
+       class, but tied to scroll position instead of mount time. */
+    .rise {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+      /* Runs across the band where the element enters the viewport,
+         and is fully settled well before it reaches centre. */
+      animation-range: entry 0% entry 55%;
+    }
+
+    /* Drift lives on the WRAPPER, never on the panel itself. An
+       earlier version put it on the panel, where it silently
+       overwrote the panel's own entrance — same element, one
+       `animation` property, last declaration wins. */
+    .hero-drift {
+      animation: hero-drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes scroll-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-drift {
+  to {
+    transform: translateY(-26px);
   }
 }

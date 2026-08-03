@@ -1,0 +1,107 @@
+/* ============================================================
+   Cover art — deterministic, asset-free.
+
+   Six geometric layouts chosen by a hash of the slug, each in the
+   course's own accent, with an optional photograph layered over.
+   Left as CSS rather than utilities: three absolutely positioned
+   spans x six variants x four rotations is positional art, and it
+   reads far better as a table of rules than as arbitrary values
+   scattered through the markup.
+   ============================================================ */
+
+.cover {
+  --c: var(--brand);
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: var(--sunk);
+  overflow: hidden;
+}
+/* Cool, restrained cover palette. The previous set leaned olive and
+   ochre, which is exactly the range that reads seventies. */
+.cover[data-accent='cyan'] { --c: #12657c; }
+.cover[data-accent='violet'] { --c: #4a45a3; }
+.cover[data-accent='lime'] { --c: #2c7157; }
+.cover[data-accent='amber'] { --c: #35597d; }
+.cover[data-accent='rose'] { --c: #9c2450; }
+
+.cover__a,
+.cover__b,
+.cover__c {
+  position: absolute;
+  background: var(--c);
+}
+
+.cover--0 .cover__a { inset: 0; opacity: 0.16; }
+.cover--0 .cover__b { inset: 24% 0 0 24%; opacity: 0.32; }
+.cover--0 .cover__c { inset: 52% 0 0 52%; opacity: 0.6; }
+
+.cover--1 .cover__a { inset: 0; opacity: 0.14; }
+.cover--1 .cover__b { left: 10%; top: 16%; width: 30%; height: 68%; opacity: 0.42; }
+.cover--1 .cover__c { left: 52%; top: 32%; width: 34%; height: 36%; opacity: 0.68; }
+
+.cover--2 .cover__a { inset: 0; opacity: 0.12; }
+.cover--2 .cover__b { inset: 14%; border-radius: 50%; opacity: 0.36; }
+.cover--2 .cover__c { inset: 33%; border-radius: 50%; opacity: 0.72; }
+
+.cover--3 .cover__a { inset: 0; opacity: 0.15; }
+.cover--3 .cover__b { left: 0; bottom: 0; width: 100%; height: 44%; opacity: 0.42; }
+.cover--3 .cover__c { left: 0; bottom: 0; width: 100%; height: 17%; opacity: 0.72; }
+
+.cover--4 .cover__a { inset: 0; opacity: 0.13; }
+.cover--4 .cover__b { left: 7%; top: 7%; width: 42%; height: 42%; opacity: 0.5; }
+.cover--4 .cover__c { right: 7%; bottom: 7%; width: 42%; height: 42%; opacity: 0.5; }
+
+.cover--5 .cover__a { inset: 0; opacity: 0.15; }
+.cover--5 .cover__b { left: 48%; top: -22%; width: 46%; height: 144%; transform: rotate(20deg); opacity: 0.34; }
+.cover--5 .cover__c { left: 16%; top: -22%; width: 22%; height: 144%; transform: rotate(20deg); opacity: 0.6; }
+
+.cover[data-rot='1'] { transform: scaleX(-1); }
+.cover[data-rot='2'] { transform: scaleY(-1); }
+.cover[data-rot='3'] { transform: scale(-1); }
+
+/* Photography sits over the generated geometry, which stays visible
+   underneath while the image loads and remains as the fallback if it
+   never arrives. Fades in on load so there is no hard pop. */
+.cover__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--t4) var(--ease);
+}
+.cover__img.is-loaded {
+  opacity: 1;
+}
+
+/* No colour wash.
+
+   An accent tint was meant to make ten unrelated stock photos read as
+   one set. It did the opposite — every photo came out with a green or
+   teal cast that looked like a filter, not a design system. What is
+   left is a neutral top vignette, present only so the LIVE badge has
+   something to sit against on a bright image. */
+.cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 9, 12, 0.35), transparent 38%);
+}
+
+:root[data-theme='dark'] .cover::after {
+  background: linear-gradient(180deg, rgba(8, 9, 12, 0.45), transparent 40%),
+    linear-gradient(0deg, rgba(8, 9, 12, 0.35), transparent 30%);
+}
+
+/* Cancel the parent flip. Harmless on abstract geometry, essential on
+   photography — a mirrored photo puts any signage or faces the wrong
+   way round. */
+.cover[data-rot='1'] .cover__img { transform: scaleX(-1); }
+.cover[data-rot='2'] .cover__img { transform: scaleY(-1); }
+.cover[data-rot='3'] .cover__img { transform: scale(-1); }

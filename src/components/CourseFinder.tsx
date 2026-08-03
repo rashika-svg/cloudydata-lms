@@ -16,9 +16,16 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { COURSES, formatINR, type Course } from '../data/courses'
-import { whatsappLink } from '../data/site'
+import { Button } from './ui/Button'
 import { Icon, type IconName } from './ui/Icon'
 import { Cover } from './ui/Primitives'
+import { Wa } from './ui/Wa'
+
+/* Quiet tertiary action — reachable without competing with the two
+   real calls to action beside it. */
+const AGAIN =
+  'inline-flex items-center gap-1.5 text-xs font-medium text-on-surface-variant ' +
+  'transition-colors duration-200 hover:text-primary'
 
 type Level = 'new' | 'some' | 'working'
 type Goal = 'analyst' | 'scientist' | 'engineer' | 'marketing' | 'security' | 'bi'
@@ -171,58 +178,77 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
   const current = QUESTIONS[step]
 
   return (
-    <div className="finder" id="finder">
-      <div className="finder__head">
-        <span className="finder__eyebrow">Not sure which track?</span>
-        <h2>Answer three questions.</h2>
-        <p>
-          You will get one honest recommendation — and you can take the answers straight to WhatsApp instead of
-          starting the conversation from scratch.
+    <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-lowest shadow-e2" id="finder">
+      <div className="border-b border-outline-variant px-8 pt-8 pb-6 text-center">
+        <span className="mb-2 block font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
+          Not sure which track?
+        </span>
+        <h2 className="text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">Answer three questions.</h2>
+        <p className="mx-auto mt-3 max-w-[60ch] text-sm text-on-surface-variant">
+          You will get one honest recommendation — and you can take the answers straight to WhatsApp instead of starting
+          the conversation from scratch.
         </p>
       </div>
 
       {/* Progress across the three steps. */}
-      <ol className="finder__steps" aria-label="Progress">
+      <ol
+        className="flex flex-wrap justify-center gap-6 border-b border-outline-variant bg-surface-container px-6 py-4"
+        aria-label="Progress"
+      >
         {QUESTIONS.map((q, i) => (
           <li
             key={q.key}
-            className={`${answers[q.key] ? 'is-done' : ''} ${i === step ? 'is-current' : ''}`}
+            className={`flex items-center gap-2 text-xs transition-colors duration-200 ${
+              answers[q.key] ? 'text-on-surface' : 'text-outline'
+            }`}
             aria-current={i === step ? 'step' : undefined}
           >
-            <span className="finder__stepnum">{answers[q.key] ? <Icon name="check" size={12} strokeWidth={3} /> : i + 1}</span>
-            <span className="finder__steplabel">{['Starting point', 'Goal', 'Time'][i]}</span>
+            <span
+              className={`grid size-5.5 place-items-center rounded-full border font-mono text-[0.6875rem] transition-[background-color,border-color,color] duration-200 ${
+                answers[q.key]
+                  ? 'border-primary bg-primary text-on-primary'
+                  : i === step
+                    ? 'border-primary text-primary'
+                    : 'border-outline'
+              }`}
+            >
+              {answers[q.key] ? <Icon name="check" size={12} strokeWidth={3} /> : i + 1}
+            </span>
+            <span>{['Starting point', 'Goal', 'Time'][i]}</span>
           </li>
         ))}
       </ol>
 
-      <div className="finder__body">
+      <div className="p-8">
         {!done && current && (
           /* Keyed so each question animates in rather than snapping. */
-          <div className="finder__q" key={current.key}>
-            <h3>{current.title}</h3>
-            <p>{current.sub}</p>
+          <div className="rise text-center" key={current.key}>
+            <h3 className="text-[1.1875rem]">{current.title}</h3>
+            <p className="mx-auto mt-2 mb-6 max-w-[56ch] text-sm text-on-surface-variant">{current.sub}</p>
 
-            <div className="finder__opts">
+            <div className="mx-auto grid max-w-195 grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-3">
               {current.options.map((o) => (
                 <button
                   key={o.value}
                   type="button"
-                  className={`finder__opt ${answers[current.key] === o.value ? 'is-on' : ''}`}
+                  className={`group flex items-center gap-3 rounded-md border p-4 text-left transition-[border-color,background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-e2 ${
+                    answers[current.key] === o.value ? 'border-primary bg-primary/8' : 'border-outline bg-surface-lowest'
+                  }`}
                   onClick={() => pick(current.key, o.value)}
                 >
-                  <span className="finder__opticon">
+                  <span className="grid size-9 flex-none place-items-center rounded-md bg-surface-container text-on-surface-variant transition-colors duration-200 group-hover:bg-primary/16 group-hover:text-primary">
                     <Icon name={o.icon} size={17} />
                   </span>
-                  <span>
-                    <strong>{o.label}</strong>
-                    <span>{o.hint}</span>
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <strong className="text-sm">{o.label}</strong>
+                    <span className="text-xs text-on-surface-variant">{o.hint}</span>
                   </span>
                 </button>
               ))}
             </div>
 
             {step > 0 && (
-              <button type="button" className="finder__back" onClick={() => setStep((s) => s - 1)}>
+              <button type="button" className={`${AGAIN} mt-6`} onClick={() => setStep((s) => s - 1)}>
                 <Icon name="chevron-left" size={14} /> Back
               </button>
             )}
@@ -230,61 +256,63 @@ It suggested ${top.course.title}. Does that sound right, and when is the next ba
         )}
 
         {done && top && (
-          <div className="finder__result">
-            <div className="finder__pick">
-              <span className="finder__picklabel">Best fit</span>
+          <div className="rise">
+            <span className="mb-3 block font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
+              Best fit
+            </span>
 
-              <Link to={`/courses/${top.course.slug}`} className="finder__pickcard">
-                <span className="finder__pickcover">
-                  <Cover slug={top.course.slug} accent={top.course.accent} />
+            <Link
+              to={`/courses/${top.course.slug}`}
+              className="grid gap-6 rounded-lg border border-primary/16 bg-primary/8 p-4 transition-colors duration-200 hover:border-primary min-[620px]:grid-cols-[200px_minmax(0,1fr)]"
+            >
+              <span className="overflow-hidden rounded-md">
+                <Cover slug={top.course.slug} accent={top.course.accent} />
+              </span>
+              <span className="flex min-w-0 flex-col gap-2">
+                <strong className="text-[1.1875rem]">{top.course.title}</strong>
+                <span className="text-xs text-on-surface-variant">
+                  {top.course.durationLabel} · {top.course.level} · {formatINR(top.course.priceINR)}
                 </span>
-                <span className="finder__pickbody">
-                  <strong>{top.course.title}</strong>
-                  <span className="finder__pickmeta">
-                    {top.course.durationLabel} · {top.course.level} · {formatINR(top.course.priceINR)}
-                  </span>
-                  <ul className="finder__why">
-                    {top.reasons.map((r) => (
-                      <li key={r}>
-                        <Icon name="check" size={13} strokeWidth={2.4} /> {r}
-                      </li>
-                    ))}
-                  </ul>
-                </span>
-              </Link>
+                <ul className="mt-2 flex flex-col gap-1.5 text-sm">
+                  {top.reasons.map((r) => (
+                    <li key={r} className="flex items-start gap-2 text-on-surface-variant">
+                      <Icon name="check" size={13} strokeWidth={2.4} className="mt-[3px] flex-none text-ok" /> {r}
+                    </li>
+                  ))}
+                </ul>
+              </span>
+            </Link>
 
-              <div className="finder__actions">
-                <Link to={`/courses/${top.course.slug}`} className="btn btn--brand">
-                  View this course
-                  <Icon name="arrow-right" size={15} className="btn__icon" />
-                </Link>
-                <a
-                  className="wa"
-                  href={whatsappLink(waMessage())}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Icon name="whatsapp" size={17} />
-                  <span>Check with Ajay</span>
-                </a>
-                <button type="button" className="finder__again" onClick={restart}>
-                  <Icon name="rotate" size={13} /> Start again
-                </button>
-              </div>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Button to={`/courses/${top.course.slug}`} variant="brand" icon="arrow-right">
+                View this course
+              </Button>
+              <Wa message={waMessage()}>Check with Ajay</Wa>
+              <button type="button" className={`${AGAIN} ml-auto`} onClick={restart}>
+                <Icon name="rotate" size={13} /> Start again
+              </button>
             </div>
 
             {ranked.length > 1 && (
-              <div className="finder__alts">
-                <span className="finder__altlabel">Also worth a look</span>
-                {ranked.slice(1).map(({ course }) => (
-                  <Link key={course.slug} to={`/courses/${course.slug}`} className="finder__alt">
-                    <strong>{course.title}</strong>
-                    <span>
-                      {course.durationLabel} · {formatINR(course.priceINR)}
-                    </span>
-                    <Icon name="chevron-right" size={15} />
-                  </Link>
-                ))}
+              <div className="mt-8 border-t border-outline-variant pt-6">
+                <span className="mb-3 block font-mono text-[0.6875rem] tracking-[0.09em] text-outline uppercase">
+                  Also worth a look
+                </span>
+                <div className="flex flex-col gap-2">
+                  {ranked.slice(1).map(({ course }) => (
+                    <Link
+                      key={course.slug}
+                      to={`/courses/${course.slug}`}
+                      className="flex items-center gap-3 rounded-md border border-outline-variant bg-surface-lowest px-4 py-3 transition-[border-color,transform] duration-200 hover:translate-x-0.5 hover:border-outline"
+                    >
+                      <strong className="min-w-0 flex-1 text-sm">{course.title}</strong>
+                      <span className="text-xs whitespace-nowrap text-on-surface-variant">
+                        {course.durationLabel} · {formatINR(course.priceINR)}
+                      </span>
+                      <Icon name="chevron-right" size={15} className="text-outline" />
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>

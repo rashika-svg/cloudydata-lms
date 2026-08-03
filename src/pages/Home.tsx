@@ -13,7 +13,6 @@ import {
   PILLARS,
   TOOL_MARQUEE,
   WA_GENERAL,
-  whatsappLink,
 } from '../data/site'
 import { useEffect, useState } from 'react'
 import { useApp } from '../store/app'
@@ -23,7 +22,15 @@ import { CourseFinder } from '../components/CourseFinder'
 import { AccordionItem } from '../components/ui/Accordion'
 import { Button } from '../components/ui/Button'
 import { Icon, type IconName } from '../components/ui/Icon'
+import { CtaBand, Grid, Section, Wrap } from '../components/ui/Layout'
 import { Avatar, Ring, SectionHead, Stat, Stars } from '../components/ui/Primitives'
+import { Wa } from '../components/ui/Wa'
+
+/* A rule, then the label. Used once per section, so the eye learns
+   where a new idea starts without another heading level. */
+const EYEBROW =
+  "inline-flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase " +
+  "before:h-px before:w-5.5 before:bg-current before:opacity-60 before:content-['']"
 
 /* One project per course, taken from the real curriculum rather than
    written for the marketing page. Computed once at module load. */
@@ -56,14 +63,29 @@ function RotatingWord() {
   }, [reduced])
 
   return (
-    <span className="rot" aria-label={ROLES.join(', ')}>
+    <span
+      className="relative inline-block h-[1.02em] overflow-hidden align-bottom"
+      aria-label={ROLES.join(', ')}
+    >
       {/* Invisible longest string reserves the width so the line never jumps. */}
-      <span className="rot__ghost" aria-hidden="true">
+      <span className="block h-[1.02em] whitespace-nowrap invisible" aria-hidden="true">
         Data Scientist
       </span>
-      <span className="rot__track" style={{ '--rot-i': index } as React.CSSProperties} aria-hidden="true">
+      <span
+        className="absolute inset-0 flex flex-col transition-transform duration-600 ease-spring"
+        style={
+          {
+            '--rot-i': index,
+            transform: 'translateY(calc(var(--rot-i) * -1.02em))',
+          } as React.CSSProperties
+        }
+        aria-hidden="true"
+      >
         {ROLES.map((role) => (
-          <span className="rot__word grad-text" key={role}>
+          <span
+            className="block h-[1.02em] flex-none bg-[image:var(--grad-brand)] bg-clip-text leading-[1.02] whitespace-nowrap text-transparent"
+            key={role}
+          >
             {role}
           </span>
         ))}
@@ -88,48 +110,76 @@ function HeroPanel() {
   const lessons = ML_MODULE.lessons.slice(0, 5)
 
   return (
-    <div className="hero__panel" ref={tiltRef} data-cursor="card">
-      <span className="hero__panelglow" aria-hidden="true" />
-      <span className="hero__panelsheen" aria-hidden="true" />
+    <div
+      className="tilt relative animate-[rise_600ms_var(--ease-out)_140ms_backwards]"
+      ref={tiltRef}
+      data-cursor="card"
+    >
+      <span
+        className="pointer-events-none absolute -inset-[18%] -z-1 animate-[pulse-glow_6s_var(--ease)_infinite] bg-[radial-gradient(50%_50%_at_50%_50%,var(--brand-a15),transparent_70%)] blur-3xl"
+        aria-hidden="true"
+      />
+      <span
+        className="pointer-events-none absolute inset-0 z-2 rounded-lg bg-[radial-gradient(18rem_18rem_at_var(--px,50%)_var(--py,50%),rgb(255_255_255/0.08),transparent_60%)]"
+        aria-hidden="true"
+      />
 
-      <div className="console">
-        <div className="console__bar">
-          <span className="console__dots" aria-hidden="true">
-            <i />
-            <i />
-            <i />
+      <div className="relative overflow-hidden rounded-lg border border-outline bg-[image:var(--grad-surface)] shadow-e3">
+        <div className="flex items-center gap-3 border-b border-outline-variant bg-surface-lowest px-4 py-3">
+          <span className="flex gap-1.5" aria-hidden="true">
+            <i className="size-2.25 rounded-full bg-surface-high" />
+            <i className="size-2.25 rounded-full bg-surface-high" />
+            <i className="size-2.25 rounded-full bg-surface-high" />
           </span>
-          <span className="console__title">my-learning · data-science</span>
+          <span className="font-mono text-[0.6875rem] text-outline">my-learning · data-science</span>
         </div>
 
-        <div className="console__body">
-          <div className="console__row">
+        <div className="flex flex-col gap-4 p-6">
+          <div className="flex items-center gap-4">
             <Ring ratio={0.62} size={78} stroke={7}>
               <strong>62%</strong>
             </Ring>
-            <div className="console__meta">
-              <span className="console__eyebrow">Current module</span>
-              <strong>{ML_MODULE.title}</strong>
-              <span className="console__sub">{lessons[3]?.title}</span>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="font-mono text-[0.6875rem] tracking-[0.09em] text-primary uppercase">
+                Current module
+              </span>
+              <strong className="text-[1.15rem]">{ML_MODULE.title}</strong>
+              <span className="text-xs text-on-surface-variant">{lessons[3]?.title}</span>
             </div>
           </div>
 
-          <ul className="console__list">
-            {lessons.map((l, i) => (
-              <li key={l.id} className={i < 3 ? 'is-done' : ''} style={{ '--i': i } as React.CSSProperties}>
-                <span className="console__check" aria-hidden="true">
-                  <Icon name="check" size={12} strokeWidth={2.6} />
-                </span>
-                {l.title}
-              </li>
-            ))}
+          <ul className="flex flex-col gap-0.5">
+            {lessons.map((l, i) => {
+              const isDone = i < 3
+              return (
+                <li
+                  key={l.id}
+                  className={`flex animate-[console-row_400ms_var(--ease-out)_backwards] items-center gap-3 rounded-md px-2.5 py-2 text-sm [animation-delay:calc(400ms+var(--i)*90ms)] ${
+                    isDone
+                      ? 'text-on-surface-variant line-through decoration-outline'
+                      : 'bg-primary/8 text-on-surface'
+                  }`}
+                  style={{ '--i': i } as React.CSSProperties}
+                >
+                  <span
+                    className={`grid size-4.5 flex-none place-items-center rounded-full border ${
+                      isDone ? 'border-ok bg-ok-container text-ok' : 'border-outline text-transparent'
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <Icon name="check" size={12} strokeWidth={2.6} />
+                  </span>
+                  {l.title}
+                </li>
+              )
+            })}
           </ul>
 
-          <div className="console__foot">
-            <span className="console__streak">
+          <div className="flex items-center justify-between gap-3 border-t border-outline-variant pt-4 text-xs">
+            <span className="inline-flex items-center gap-1.5 text-warn">
               <Icon name="flame" size={14} /> 12-day streak
             </span>
-            <span className="console__next">
+            <span className="inline-flex items-center gap-1.5 text-primary">
               Next live class · Thu 8pm <Icon name="arrow-right" size={13} />
             </span>
           </div>
@@ -144,9 +194,14 @@ export default function Home() {
 
   const cheapest = COURSES.reduce((min, c) => (c.priceINR < min.priceINR ? c : min), COURSES[0]!)
   const featured = COURSES.filter((c) =>
-    ['data-science', 'data-analytics-one-on-one', 'ai-driven-data-analytics', 'data-engineering', 'data-super-star', 'business-analytics-gen-ai'].includes(
-      c.slug,
-    ),
+    [
+      'data-science',
+      'data-analytics-one-on-one',
+      'ai-driven-data-analytics',
+      'data-engineering',
+      'data-super-star',
+      'business-analytics-gen-ai',
+    ].includes(c.slug),
   )
 
   const inProgress = enrolled
@@ -158,64 +213,78 @@ export default function Home() {
   return (
     <>
       {/* ---- Hero ------------------------------------- */}
-      <section className="hero">
-        <div className="wrap hero__inner">
-          <div className="hero__copy">
-            <span className="eyebrow">{HERO.eyebrow}</span>
+      <section className="border-b border-outline-variant bg-surface-lowest">
+        <Wrap className="grid items-center gap-12 pt-[clamp(3rem,6vw,6.5rem)] pb-12 min-[880px]:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
+          <div className="flex flex-col items-start gap-6">
+            <span className={EYEBROW}>{HERO.eyebrow}</span>
 
-            <h1 className="hero__title">
+            <h1 className="text-[clamp(2.75rem,1.6rem+5.2vw,5.5rem)] leading-[1.02] font-bold tracking-[-0.035em]">
               Become a <RotatingWord />
               <br />
-              <span className="hero__quiet">without going broke.</span>
+              <span className="text-on-surface-variant">without going broke.</span>
             </h1>
 
-            <p className="hero__sub">{HERO.sub}</p>
+            <p className="max-w-[58ch] text-[clamp(1rem,0.95rem+0.35vw,1.14rem)] text-on-surface-variant">
+              {HERO.sub}
+            </p>
 
-            <div className="hero__actions">
+            <div className="flex flex-wrap gap-3">
               {/* The only gradient button on the site. */}
               <Button to="/courses" size="lg" variant="brand" icon="arrow-right" className="btn--gradient">
                 Explore courses
               </Button>
-              <a className="wa wa--lg" href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
-                <Icon name="whatsapp" size={19} />
-                <span>Get details on WhatsApp</span>
-              </a>
+              <Wa message={WA_GENERAL} size="lg">
+                Get details on WhatsApp
+              </Wa>
             </div>
 
-            <ul className="hero__proof">
-              <li>
-                <Icon name="check-circle" size={15} /> Starts at {formatINR(cheapest.priceINR)}
-              </li>
-              <li>
-                <Icon name="check-circle" size={15} /> Daily 1-on-1 doubt clearing
-              </li>
-              <li>
-                <Icon name="check-circle" size={15} /> Interview prep from day one
-              </li>
+            <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-on-surface-variant">
+              {[
+                `Starts at ${formatINR(cheapest.priceINR)}`,
+                'Daily 1-on-1 doubt clearing',
+                'Interview prep from day one',
+              ].map((point) => (
+                <li key={point} className="inline-flex items-center gap-2">
+                  <Icon name="check-circle" size={15} className="text-ok" /> {point}
+                </li>
+              ))}
             </ul>
 
             {/* Keeps the one-instructor brand present even though the
                 panel, not the founder, now leads the hero. */}
-            <p className="hero__by">
+            <p className="text-xs text-on-surface-variant">
               Every class taught by{' '}
-              <Link to="/about">
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-1 font-semibold text-primary hover:underline hover:underline-offset-[3px]"
+              >
                 {FOUNDER.name} <Icon name="arrow-right" size={12} />
               </Link>
             </p>
           </div>
 
-          {/* The v1 hero visual: a mock of the product itself. */}
-          <aside className="hero__visual">
+          {/* The v1 hero visual: a mock of the product itself. The
+              drift is on this wrapper, not the panel — the panel has
+              its own entrance animation and one element cannot run
+              both. */}
+          <aside className="hero-drift [perspective:1400px]">
             <HeroPanel />
           </aside>
-        </div>
+        </Wrap>
 
-        <div className="ticker" aria-hidden="true">
-          <div className="ticker__track">
+        {/* Marquee of the tools taught, masked at both ends so it
+            fades rather than clipping mid-word. */}
+        <div
+          className="group flex select-none overflow-hidden border-t border-outline-variant bg-surface-container py-4 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
+          aria-hidden="true"
+        >
+          <div className="flex flex-none animate-[ticker_38s_linear_infinite] group-hover:[animation-play-state:paused]">
             {[0, 1].map((pass) => (
-              <span className="ticker__set" key={pass}>
+              <span className="flex flex-none gap-8 pr-8" key={pass}>
                 {TOOL_MARQUEE.map((t) => (
-                  <span key={`${pass}-${t}`}>{t}</span>
+                  <span key={`${pass}-${t}`} className="font-mono text-xs whitespace-nowrap text-outline">
+                    {t}
+                  </span>
                 ))}
               </span>
             ))}
@@ -225,8 +294,8 @@ export default function Home() {
 
       {/* ---- Continue learning ------------------------ */}
       {inProgress.length > 0 && (
-        <section className="section section--tight">
-          <div className="wrap">
+        <Section tight>
+          <Wrap>
             <SectionHead
               eyebrow="Pick up where you left off"
               title="Continue learning"
@@ -236,25 +305,25 @@ export default function Home() {
                 </Button>
               }
             />
-            <div className="grid grid--3">
+            <Grid>
               {inProgress.map((c, i) => (
                 <CourseCard key={c.slug} course={c} index={i} enrolledView />
               ))}
-            </div>
-          </div>
-        </section>
+            </Grid>
+          </Wrap>
+        </Section>
       )}
 
       {/* ---- Course finder ---------------------------- */}
-      <section className="section section--tight">
-        <div className="wrap">
+      <Section tight>
+        <Wrap>
           <CourseFinder />
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
       {/* ---- Courses ---------------------------------- */}
-      <section className="section">
-        <div className="wrap">
+      <Section>
+        <Wrap>
           <SectionHead
             eyebrow="Live batches"
             title="Pick the career you want"
@@ -266,17 +335,17 @@ export default function Home() {
             }
           />
 
-          <div className="grid grid--3">
+          <Grid>
             {featured.map((c, i) => (
               <CourseCard key={c.slug} course={c} index={i} />
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
       {/* ---- Why -------------------------------------- */}
-      <section className="section section--alt">
-        <div className="wrap">
+      <Section tone="alt">
+        <Wrap>
           <SectionHead
             eyebrow="Learn by doing"
             title="Not a recorded course you never finish"
@@ -284,25 +353,29 @@ export default function Home() {
             center
           />
 
-          <div className="grid grid--3">
+          <Grid>
             {PILLARS.map((p, i) => (
-              <article className="feature rise" key={p.title} style={{ '--i': i } as React.CSSProperties}>
-                <span className="feature__icon">
+              <article
+                className="rise flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-lowest p-6 shadow-e1 transition-[transform,box-shadow] duration-300 ease-decelerate hover:-translate-y-1 hover:shadow-e3"
+                key={p.title}
+                style={{ '--i': i } as React.CSSProperties}
+              >
+                <span className="grid size-11 place-items-center rounded-md border border-outline-variant bg-surface-container text-on-surface-variant">
                   <Icon name={p.icon as IconName} size={19} />
                 </span>
-                <h3>{p.title}</h3>
-                <p>{p.body}</p>
+                <h3 className="text-[1.08rem]">{p.title}</h3>
+                <p className="text-sm text-on-surface-variant">{p.body}</p>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
       {/* ---- Projects ---------------------------------
           Real project lessons pulled from the curricula, not invented
           marketing examples. */}
-      <section className="section">
-        <div className="wrap">
+      <Section>
+        <Wrap>
           <SectionHead
             eyebrow="Learn by doing"
             title="Things you will actually build"
@@ -310,129 +383,135 @@ export default function Home() {
             center
           />
 
-          <div className="projects">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-3">
             {PROJECTS.map((p, i) => (
               <Link
                 to={`/courses/${p.slug}`}
-                className="project rise"
+                className="group rise flex items-center gap-4 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-4 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-primary/16 hover:shadow-e2"
                 key={`${p.slug}-${p.title}`}
                 style={{ '--i': Math.min(i, 6) } as React.CSSProperties}
               >
-                <span className="project__n">{String(i + 1).padStart(2, '0')}</span>
-                <span className="project__body">
-                  <strong>{p.title}</strong>
-                  <span>{p.course}</span>
+                <span className="flex-none font-mono text-sm text-primary">{String(i + 1).padStart(2, '0')}</span>
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <strong className="text-sm">{p.title}</strong>
+                  <span className="text-xs text-outline">{p.course}</span>
                 </span>
-                <Icon name="arrow-up-right" size={15} className="project__go" />
+                <Icon
+                  name="arrow-up-right"
+                  size={15}
+                  className="flex-none -translate-x-1 translate-y-1 text-outline opacity-0 transition-[opacity,transform,color] duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-primary group-hover:opacity-100"
+                />
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
       {/* ---- Stats ------------------------------------ */}
-      <section className="section section--tight">
-        <div className="wrap">
-          <div className="statband">
+      <Section tight>
+        <Wrap>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-6 rounded-lg border border-outline-variant bg-surface-lowest p-8 shadow-e1">
             {DEMO_STATS.map((s) => (
               <Stat key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
             ))}
           </div>
-          <p className="note note--center">Figures are illustrative demo content for this front-end build.</p>
-        </div>
-      </section>
+          <p className="mt-6 text-center text-xs text-outline">
+            Figures are illustrative demo content for this front-end build.
+          </p>
+        </Wrap>
+      </Section>
 
       {/* ---- About me --------------------------------- */}
-      <section className="section">
-        <div className="wrap aboutme">
-          <div className="aboutme__card">
+      <Section>
+        <Wrap className="grid items-center gap-12 min-[880px]:grid-cols-[300px_minmax(0,1fr)]">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-6 py-8 text-center shadow-e1">
             <Avatar initials={FOUNDER.initials} size={72} />
-            <strong>{FOUNDER.name}</strong>
-            <span>{FOUNDER.role}</span>
+            <strong className="mt-3 text-[1.15rem]">{FOUNDER.name}</strong>
+            <span className="text-xs text-on-surface-variant">{FOUNDER.role}</span>
           </div>
-          <div className="aboutme__copy">
-            <span className="shead__eyebrow">About me</span>
-            <h2>Why I started CloudyData</h2>
-            <blockquote>“{FOUNDER.mission}”</blockquote>
-            <p>{FOUNDER.bio}</p>
-            <div className="aboutme__actions">
+          <div className="flex flex-col items-start gap-4">
+            <span className="font-mono text-[0.6875rem] font-medium tracking-[0.09em] text-outline uppercase">
+              About me
+            </span>
+            <h2 className="text-[clamp(1.45rem,1.2rem+1.1vw,2rem)]">Why I started CloudyData</h2>
+            <blockquote className="border-l-[3px] border-primary pl-4 text-[1.2rem] leading-snug font-semibold">
+              “{FOUNDER.mission}”
+            </blockquote>
+            <p className="max-w-[64ch] text-on-surface-variant">{FOUNDER.bio}</p>
+            <div className="flex flex-wrap gap-3">
               <Button to="/about" variant="outline" icon="arrow-right">
                 More about me
               </Button>
-              <a className="wa" href={whatsappLink(WA_GENERAL)} target="_blank" rel="noopener noreferrer">
-                <Icon name="whatsapp" size={17} />
-                <span>Message me</span>
-              </a>
+              <Wa message={WA_GENERAL}>Message me</Wa>
             </div>
           </div>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
       {/* ---- Testimonials ----------------------------- */}
-      <section className="section section--alt">
-        <div className="wrap">
+      <Section tone="alt">
+        <Wrap>
           <SectionHead eyebrow="Learner stories" title="Where people end up" center />
 
-          <div className="grid grid--2">
+          <Grid min={320}>
             {DEMO_TESTIMONIALS.map((t, i) => (
-              <figure className="quote rise" key={t.name} style={{ '--i': i } as React.CSSProperties}>
+              <figure
+                className="rise m-0 flex flex-col gap-4 rounded-lg border border-outline-variant bg-surface-lowest p-6"
+                key={t.name}
+                style={{ '--i': i } as React.CSSProperties}
+              >
                 <Stars value={5} size={14} />
-                <blockquote>{t.quote}</blockquote>
-                <figcaption>
+                <blockquote className="flex-1 text-sm leading-relaxed text-on-surface-variant">{t.quote}</blockquote>
+                <figcaption className="flex items-center gap-3 border-t border-outline-variant pt-4">
                   <Avatar initials={t.initials} size={38} />
-                  <span>
-                    <strong>{t.name}</strong>
-                    <span>
+                  <span className="flex flex-col">
+                    <strong className="text-sm">{t.name}</strong>
+                    <span className="text-xs text-outline">
                       {t.role} · {t.course}
                     </span>
                   </span>
                 </figcaption>
               </figure>
             ))}
-          </div>
+          </Grid>
 
-          <p className="note note--center">Testimonials are demo content written for this front-end build.</p>
-        </div>
-      </section>
+          <p className="mt-6 text-center text-xs text-outline">
+            Testimonials are demo content written for this front-end build.
+          </p>
+        </Wrap>
+      </Section>
 
       {/* ---- FAQ -------------------------------------- */}
-      <section className="section">
-        <div className="wrap wrap--narrow">
+      <Section>
+        <Wrap narrow>
           <SectionHead eyebrow="Questions" title="Before you enrol" center />
-          <div className="faq">
+          <div className="flex flex-col">
             {FAQS.map((f, i) => (
               <AccordionItem key={f.q} title={f.q} defaultOpen={i === 0}>
                 <p>{f.a}</p>
               </AccordionItem>
             ))}
           </div>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
       {/* ---- CTA -------------------------------------- */}
-      <section className="cta">
-        <div className="wrap">
-          <h2>Not sure which track fits you?</h2>
-          <p>
-            Message me on WhatsApp with where you are now and where you want to be. You will get an honest
-            recommendation — including “none of these yet” if that is the true answer.
-          </p>
-          <div className="cta__actions">
-            <a
-              className="wa wa--lg wa--onDark"
-              href={whatsappLink(WA_GENERAL)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icon name="whatsapp" size={19} />
-              <span>Message me on WhatsApp</span>
-            </a>
+      <CtaBand
+        title="Not sure which track fits you?"
+        actions={
+          <>
+            <Wa message={WA_GENERAL} size="lg" onDark>
+              Message me on WhatsApp
+            </Wa>
             <Button to="/courses" size="lg" variant="onDark">
               Browse all courses
             </Button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      >
+        Message me on WhatsApp with where you are now and where you want to be. You will get an honest recommendation —
+        including “none of these yet” if that is the true answer.
+      </CtaBand>
     </>
   )
 }

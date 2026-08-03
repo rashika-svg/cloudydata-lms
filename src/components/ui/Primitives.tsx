@@ -96,17 +96,26 @@ export function SectionHead({
    A muted row with a clipped gold row over it, so 4.7 shows a genuine
    partial star instead of being rounded. */
 
-export function Stars({ value, size = 13 }: { value: number; size?: number }) {
+/* The dark bands (the detail hero, the CTA) are dark in BOTH themes,
+   so they cannot use --star: its light-theme cut is a dark brown that
+   disappears against them. `onDark` pins the gold to its dark-scheme
+   value instead. */
+const GOLD = { default: 'text-star', onDark: 'text-[#f0c04f]' }
+const MUTED = { default: 'text-outline-variant', onDark: 'text-white/25' }
+
+type StarTone = keyof typeof GOLD
+
+export function Stars({ value, size = 13, tone = 'default' }: { value: number; size?: number; tone?: StarTone }) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100))
 
   return (
     <span className="relative inline-block leading-none" style={{ height: size }} aria-hidden="true">
-      <span className="flex gap-px text-outline-variant">
+      <span className={`flex gap-px ${MUTED[tone]}`}>
         {Array.from({ length: 5 }, (_, i) => (
           <Icon key={i} name="star" size={size} filled />
         ))}
       </span>
-      <span className="absolute inset-0 flex gap-px overflow-hidden text-star" style={{ width: `${pct}%` }}>
+      <span className={`absolute inset-0 flex gap-px overflow-hidden ${GOLD[tone]}`} style={{ width: `${pct}%` }}>
         {Array.from({ length: 5 }, (_, i) => (
           <Icon key={i} name="star" size={size} filled />
         ))}
@@ -115,13 +124,23 @@ export function Stars({ value, size = 13 }: { value: number; size?: number }) {
   )
 }
 
-export function Rating({ value, learners }: { value: number; learners?: number }) {
+export function Rating({
+  value,
+  learners,
+  tone = 'default',
+}: {
+  value: number
+  learners?: number
+  tone?: StarTone
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
-      <strong className="font-semibold text-warn">{value.toFixed(1)}</strong>
-      <Stars value={value} />
+      <strong className={`font-semibold ${tone === 'onDark' ? GOLD.onDark : 'text-warn'}`}>{value.toFixed(1)}</strong>
+      <Stars value={value} tone={tone} />
       {learners !== undefined && (
-        <span className="text-xs text-outline">({learners.toLocaleString('en-IN')})</span>
+        <span className={`text-xs ${tone === 'onDark' ? 'text-white/50' : 'text-outline'}`}>
+          ({learners.toLocaleString('en-IN')})
+        </span>
       )}
     </span>
   )

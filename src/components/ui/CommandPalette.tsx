@@ -167,21 +167,36 @@ export function CommandPalette() {
 
   return (
     <>
-      <button type="button" className="cmdk-trigger" onClick={() => setOpen(true)} aria-label="Search">
+      <button
+        type="button"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-outline-variant bg-surface-lowest px-3 text-xs text-outline transition-[border-color,color] duration-200 hover:border-outline hover:text-on-surface-variant max-nav:hidden"
+        onClick={() => setOpen(true)}
+        aria-label="Search"
+      >
         <Icon name="search" size={15} />
-        <span>Search</span>
-        <kbd>⌘K</kbd>
+        <span className="min-w-15 text-left">Search</span>
+        <kbd className="rounded-xs border border-outline-variant px-1.5 py-px font-mono text-[10px]">⌘K</kbd>
       </button>
 
       {open && (
-        <div className="cmdk" onKeyDown={onKeyDown}>
-          <div className="cmdk__scrim" onClick={() => setOpen(false)} />
-          <div className="cmdk__panel" role="dialog" aria-modal="true" aria-label="Search" ref={trapRef}>
-            <div className="cmdk__field">
+        <div className="fixed inset-0 z-300 grid place-items-start justify-center pt-[clamp(2rem,12vh,8rem)]" onKeyDown={onKeyDown}>
+          <div
+            className="absolute inset-0 animate-[fade_200ms_var(--ease)] bg-black/60 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          {/* Spring easing — the panel should feel like it snaps into place. */}
+          <div
+            className="relative flex max-h-[min(70vh,560px)] w-[min(600px,calc(100vw-3rem))] animate-[cmdk-in_280ms_var(--ease-spring)] flex-col overflow-hidden rounded-lg border border-outline bg-surface-lowest shadow-e3"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search"
+            ref={trapRef}
+          >
+            <div className="flex items-center gap-3 border-b border-outline-variant p-4 text-outline">
               <Icon name="search" size={17} />
               <input
                 ref={inputRef}
-                className="cmdk__input"
+                className="min-w-0 flex-1 bg-transparent text-on-surface outline-none placeholder:text-outline"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search courses, pages, actions…"
@@ -189,38 +204,53 @@ export function CommandPalette() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd>esc</kbd>
+              <kbd className="rounded-xs border border-outline-variant px-1.5 py-px font-mono text-[10px]">esc</kbd>
             </div>
 
-            <div className="cmdk__list" ref={listRef}>
+            <div className="flex-1 overflow-y-auto p-2" ref={listRef}>
               {results.length === 0 && (
-                <p className="cmdk__empty">
+                <p className="px-4 py-8 text-center text-sm text-on-surface-variant">
                   Nothing matches <strong>{query}</strong>
                 </p>
               )}
 
               {results.map((cmd, i) => {
                 const showGroup = i === 0 || results[i - 1]?.group !== cmd.group
+                const isActive = i === active
                 return (
                   <div key={cmd.id}>
-                    {showGroup && <div className="cmdk__group">{cmd.group}</div>}
+                    {showGroup && (
+                      <div className="px-3 pt-3 pb-2 font-mono text-[0.6875rem] tracking-[0.09em] text-outline uppercase">
+                        {cmd.group}
+                      </div>
+                    )}
                     <button
                       type="button"
-                      className="cmdk__row"
-                      data-active={i === active}
+                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors duration-100 ${
+                        isActive ? 'bg-surface-container text-on-surface' : 'text-on-surface-variant'
+                      }`}
+                      data-active={isActive}
                       onPointerMove={() => setActive(i)}
                       onClick={() => run(cmd)}
                     >
-                      <Icon name={cmd.icon} size={15} className="cmdk__rowicon" />
-                      <span className="cmdk__rowlabel">{cmd.label}</span>
-                      {cmd.hint && <span className="cmdk__rowhint">{cmd.hint}</span>}
+                      <Icon
+                        name={cmd.icon}
+                        size={15}
+                        className={`flex-none transition-colors duration-100 ${isActive ? 'text-primary' : 'text-outline'}`}
+                      />
+                      <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{cmd.label}</span>
+                      {cmd.hint && (
+                        <span className="flex-none font-mono text-[0.6875rem] whitespace-nowrap text-outline">
+                          {cmd.hint}
+                        </span>
+                      )}
                     </button>
                   </div>
                 )
               })}
             </div>
 
-            <footer className="cmdk__foot">
+            <footer className="flex gap-4 border-t border-outline-variant bg-surface-container px-4 py-3 font-mono text-[0.6875rem] text-outline">
               <span>↑↓ navigate</span>
               <span>↵ open</span>
               <span>esc close</span>
